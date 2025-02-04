@@ -1066,7 +1066,9 @@ PTEXT:	LD	A,(HL)
 ;            Z-flag reset indicates AUTO-RUN.
 ;  Destroys: A,B,C,D,E,H,L,F
 ;
-OSINIT:	LD	C,45		;*
+OSINIT:
+	log osinit
+	LD	C,45		;*
 	LD	E,254		;*
 	CALL	BDOS		;*
 	XOR	A
@@ -1119,7 +1121,7 @@ TEST:	PUSH	DE
 	POP	DE
 	OR	A
 	RET	Z
-	CP	'S' AND 1FH	;PAUSE DISPLAY?
+	CP	'S' & 1FH	;PAUSE DISPLAY?
 	JR	Z,OSRDCH
 	CP	ESC
 	JR	Z,ESCSET
@@ -1321,7 +1323,7 @@ LIMIT:	CALL	Z,KEYGET	;READ KEYBOARD
 	OR	A		;TEST FOR ESCAPE
 	LD	A,C
 	JP	M,OSEXIT
-	CP	'P' AND 1FH
+	CP	'P' & 1FH
 	JP	Z,TOGGLE
 	CP	(IX-11)		;CURSOR UP     (IX-11)
 	JP	Z,LEFT

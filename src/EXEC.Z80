@@ -607,7 +607,7 @@ DIM1:	INC	IY
 	AND	80H
 	OR	(IX)		;FLAGS
 ;
-;  A = flags: bit 7 = string, bit 0 = LOCAL 
+;  A = flags: bit 7 = string, bit 0 = LOCAL
 ; DE = amount to allocate
 ; HL = where to allocate (if not LOCAL)
 ; (HL - FREE is size of 'descriptor')
@@ -1049,7 +1049,7 @@ NEXT0:	SBC	HL,DE
 	POP	IX
 	CALL	LOADN		;LOOP VARIABLE
 	PUSH	AF
-	LD	A,'+' AND 0FH
+	LD	A,'+' & 0FH
 	CALL	FPP		;ADD STEP
 	JR	C,ERROR3
 	POP	AF		;RESTORE TYPE
@@ -1669,7 +1669,7 @@ CASE0:	EXX
 	JR	Z,CASE9
 CASE4:	BIT	0,B		;Numeric or string?
 	JR	NZ,CASE3
-	PUSH	BC		;Type/exponent/length 
+	PUSH	BC		;Type/exponent/length
 	PUSH	HL		;MS 32 bits
 	EXX
 	PUSH	HL		;LS 32 bits
@@ -2324,7 +2324,7 @@ ASSIGN:	CALL	GETVAR		;VARIABLE
 	CP	'='
 	CALL	NZ,EQUALS
 	LD	A,D
-	AND	11000000B	
+	AND	11000000B
 	RET	NZ		;String or array
 	PUSH	DE
 	PUSH	HL
@@ -2340,7 +2340,7 @@ ASSIGN:	CALL	GETVAR		;VARIABLE
 ;           HLH'L'C = value
 ;           IX = destination VARPTR
 ; Destroys: Everything except IX,IY,SP
-; 
+;
 MODIFY:	LD	A,E
 	CP	'='
 	JR	Z,STORE0	;Simple assignment
@@ -2407,7 +2407,7 @@ MODIFS:	LD	A,L		;Operator
 	CALL	LOADS
 	POP	BC
 	LD	A,E
-	ADD	C
+	ADD	A, C
 	LD	A,19		;String too long
 ERRORC:	JR	C,ERROR6
 	LD	A,B		;Type
@@ -2521,7 +2521,7 @@ SAVRET:	LD	(IX+0),L		;Formal VARPTR
 ; CALLING STATEMENT TO THE DUMMY VARIABLES VIA
 ; THE STACK.  IT MUST BE DONE THIS WAY TO MAKE
 ; PROCFRED(A,B)    DEF PROCFRED(B,A)     WORK.
-;   Inputs: DE addresses parameter list 
+;   Inputs: DE addresses parameter list
 ;           IY addresses dummy variable list
 ;           IX addresses RETURNed parameter data block
 ;  Outputs: DE,IY updated
@@ -2698,7 +2698,7 @@ RETXF4:	LD	DE,8
 	DJNZ	RETXF1
 	JP	UNSTAK
 ;
-;Restore 'RETURNed' parameters, 
+;Restore 'RETURNed' parameters,
 ;
 RESRET:	POP	BC		;B = 'RETURN' COUNT
 	LD	H,0
@@ -2957,7 +2957,7 @@ FORMAT:	CP	TTAB
 	JR	Z,DOTAB
 	CP	TSPC
 	JR	Z,DOSPC
-	CP	''''
+	CP	SINGLE_QUOTE
 	RET	NZ
 	CALL	CRLF
 	XOR	A
@@ -3103,7 +3103,7 @@ NSCAN2:	PUSH	BC
 	ADD	IY,BC		;go to next line
 	LD	A,(IY-2)
 	CP	E		;nest?
-	LD	A,C	
+	LD	A,C
 	POP	BC
 	JR	NZ,NSCAN1	;continue
 	CP	5		;empty line ?
