@@ -10,6 +10,10 @@ BACK_SLASH	EQU	5Ch
 .macro	ASEG
 .endm
 
+.macro PTR	addr
+	d24	\addr
+.endm
+
 
 .macro			log name
 	PUSH	IY
