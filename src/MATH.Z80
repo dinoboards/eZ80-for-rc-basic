@@ -67,11 +67,11 @@ OP:	CP	(RTABLE-DTABLE)/3
 DISPAT:	PUSH	HL
 	LD	HL,DTABLE
 	PUSH	BC
-			LD	BC, 3		; C = 3
-			LD	B, A 		; B = op-code
-			MLT 	BC 		;BC = op-code * 3
+	LD	BC, 3		; C = 3
+	LD	B, A 		; B = op-code
+	MLT 	BC 		;BC = op-code * 3
 	ADD	HL,BC
-			LD	HL, (HL)	;Get the routine address (24-bit)
+	LD	HL, (HL)	;Get the routine address (24-bit)
 	POP	BC
 	EX	(SP),HL
 	RET			;Off to routine
