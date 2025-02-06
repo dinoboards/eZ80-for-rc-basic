@@ -1728,6 +1728,7 @@ TEST:	LD	A,H
 ; Destroys: A,C,H,L,H',L',IY,F
 ;
 DECODE:	EXX
+	LD	HL,0
 	LD	A,(IY)
 	INC	IY
 	RLA
@@ -1745,10 +1746,8 @@ DECODE:	EXX
 	INC	IY
 	LD	H,A
 	EXX
-	XOR	A
-	LD	C,A
-	LD	H,A
-	LD	L,A
+	LD	HL, 0
+	LD	C, L
 	RET
 ;
 ;HEXSTR - convert numeric value to HEX string.
