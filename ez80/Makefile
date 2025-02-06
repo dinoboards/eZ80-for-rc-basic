@@ -5,7 +5,7 @@ MAKEFLAGS += --no-builtin-rules
 
 all: BBCBASIC.COM
 
-FILES := main.asm exec.asm eval.asm math.asm asmb.asm data.asm dist.asm hook.asm cmos.asm debug.c
+FILES := main.asm exec.asm eval.asm math.asm asmb.asm data.asm dist.asm hook.asm cmos.asm debug.c osinit.c vdu.c timer.c
 
 .PHONY: BBCBASIC.COM
 BBCBASIC.COM:

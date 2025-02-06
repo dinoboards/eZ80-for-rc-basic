@@ -4,6 +4,9 @@
 	XDEF	\addr
 .endm
 
+CR:		EQU     0DH
+LF:		EQU     0AH
+ESC:		EQU     1BH
 SINGLE_QUOTE	EQU 	27H
 BACK_SLASH	EQU	5Ch
 
@@ -14,6 +17,8 @@ BACK_SLASH	EQU	5Ch
 	d24	\addr
 .endm
 
+.macro VDU	c
+.endm
 
 .macro			log name
 	PUSH	IY

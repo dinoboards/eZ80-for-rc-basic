@@ -141,8 +141,6 @@
 	EXTRN	PC
 	EXTRN	OC
 ;
-LF	EQU	0AH
-CR	EQU	0DH
 TAND	EQU	80H
 TOR	EQU	84H
 TERROR	EQU	85H
@@ -262,7 +260,7 @@ CMDTAB:	PTR	LEFTSL
 	PTR	SYNTAX		;BY
 	PTR	EXIT
 ;
-TLAST	EQU	TCMD-128+($-CMDTAB)/2
+TLAST	EQU	TCMD-128+($-CMDTAB)/3
 ;
 RUN:	CALL	TERMQ
 	JR	Z,RUN0
@@ -307,15 +305,12 @@ XEQ1:	CALL	NXT
 	JP	PE,LET0		;IMPLIED LET
 	SUB	TCMD
 	JP	M,EXTRAS
-	ADD	A,A
-	LD	C,A
-	LD	B,0
+	LD	BC, 3
+	LD	B, A
+	MLT	BC
 	LD	HL,CMDTAB
 	ADD	HL,BC
-	LD	A,(HL)		;TABLE ENTRY
-	INC	HL
-	LD	H,(HL)
-	LD	L,A
+	LD	HL,(HL)		;TABLE ENTRY
 	CALL	NXT
 	JP	(HL)		;EXECUTE STATEMENT
 ;
@@ -764,8 +759,8 @@ PRINTA:	SUB	(HL)
 	NEG
 	CALL	SPACES
 PRINT0:	LD	A,(STAVAR)
-	LD	C,A		;PRINTS
-	LD	B,0		;PRINTF
+	LD	BC, 0
+	LD	C,A
 PRINTC:	CALL	TERMQ
 	JR	Z,PRINT4
 	RES	0,B
@@ -2387,6 +2382,15 @@ STORE4:	EXX
 	LD	(IX+2),L
 	LD	(IX+3),H
 	RET
+
+STORE4STR:
+	EXX
+	LD	(IX+0),L	; The actual string length (must be less then H')
+	LD	(IX+1),H	; The maximum (original) string length
+	EXX
+	LD	(IX+2),HL	; The pointer to the original string
+	RET
+
 ;
 ; MODIFS - Update string variable according to operator:
 ;   Inputs: H = type
@@ -2414,8 +2418,10 @@ ERRORC:	JR	C,ERROR6
 	INC	C
 	DEC	C
 	JR	Z,MODFS1	;Zero length
+	LD	L,C
+	LD	BC,0
+	LD	C,L
 	LD	HL,0
-	LD	B,H
 	ADD	HL,SP
 	LDIR
 	LD	SP,HL
@@ -2423,31 +2429,59 @@ MODFS1:	POP	IY
 ;
 ; Falls through to:
 ;
+
+;
+; Copy a string from the string accumulator to variable storage on the stack
+; Parameters:
+; - AF: The variable type (should be 81h for a string, 80h for a fixed/static string)
+; - IX: Address of the variable storage on the stack
+;
 STACCS:	LD	HL,ACCS
+;
+; Parameters:
+; As above, but:
+; - HL: Address of the string to be stored
+; -  E: The string length
+; NB:
+; Strings are mutable
+; Strings are stored in the following format in the variable:
+; - Address of the next variable (3 bytes)
+; - The rest of the variable name - this is zero terminated
+; - Current string length (byte)
+; - Maximum (original) string length (byte)
+; - String start address (3 bytes for BBC BASIC for eZ80, 2 bytes for standard BBC BASIC for Z80)
+; See https://www.bbcbasic.co.uk/bbcbasic/mancpm/annexd.html#string for more details
+;
+
 STORES:	RRA
-	JR	NC,STORS3	;FIXED STRING
+	JR	NC,STORE4STR	;FIXED STRING
 	PUSH	HL
-	CALL	LOAD4
-	LD	A,E		;LENGTH OF STRING
+	CALL	LOAD4STR
+	LD	A,E		; E : Length of string in ACCS (as passed to the function)
 	EXX
-	LD	L,A
-	LD	A,H		;LENGTH ALLOCATED
+	LD	L,A		; L': Length of string currently stored on the stack
+	LD	A,H		; H': The maximum (original) string length
 	EXX
 	CP	E
 	JR	NC,STORS1	;ENOUGH ROOM
+;
+; At this point we're either initialising a new string or assigning more memory to an existing string
+; Note that there is no garbage collection here, so if a string is reassigned and the new string is longer
+; then the existing and new strings may both exist in memory.
+;
 	EXX
-	LD	H,L
+	LD	H,L		; H: Set the maximum string length to the string length
 	EXX
 	PUSH	HL
-	LD	B,0
-	LD	C,A
-	ADD	HL,BC
+	LD	BC,0
+	LD	C,A		; BC: The maximum (original) string length
+	ADD	HL,BC		; Work out whether this is the last string in memory
 	LD	BC,(FREE)
 	SBC	HL,BC		;IS STRING LAST?
 	POP	HL
 	JR	Z,STORS0
-	LD	H,B
-	LD	L,C		;DESTINATION
+	PUSH	BC		; HL=BC
+	POP	HL		;DESTINATION
 ;
 	OR	A		;V5 optimisation
 	JR	Z,STORS0
@@ -2464,9 +2498,9 @@ STORS2:	LD	E,A
 	EXX
 ;
 STORS0:	SCF
-STORS1:	CALL	STORE4		;PRESERVES CARRY!
-	LD	B,0
-	LD	C,E
+STORS1:	CALL	STORE4STR	;PRESERVES CARRY!
+	LD	BC,0
+	LD	C,E		; BC: The new string length
 	EX	DE,HL
 	POP	HL
 	DEC	C
@@ -2476,19 +2510,22 @@ STORS1:	CALL	STORE4		;PRESERVES CARRY!
 	RET	NC		;STRING REPLACED
 	LD	(FREE),DE
 CHECK:	PUSH	HL
+	PUSH	BC
 	LD	HL,(FREE)
-	INC	H
-	SBC	HL,SP
+	LD	BC,100h		; BC: One page of memory
+	ADD	HL,BC		; Add a page to FREE
+	SBC     HL,SP		; And subtract the current SP
+	POP	BC
 	POP	HL
-	RET	C
+	RET	C		; The SP is not in the same page, so just return
 	XOR	A
 ERROR6:	JP	ERROR		;"No room"
 ;
-STORS3:	LD	C,E
+STORS3:	LD	BC, 0
+	LD	C,E		; BC: String length
 	PUSH	IX
 	POP	DE
 	XOR	A
-	LD	B,A
 	CP	C
 	JR	Z,STORS5
 	LDIR

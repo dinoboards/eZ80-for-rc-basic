@@ -100,11 +100,7 @@
 	EXTRN	INCREM
 	EXTRN	LISTON
 	EXTRN	TRACEN
-;
-CR	EQU	0DH
-LF	EQU	0AH
-ESC	EQU	1BH
-;
+;;
 TERROR	EQU	85H
 TLINE	EQU	86H
 TELSE	EQU	8BH
@@ -173,7 +169,7 @@ PURGE:	LD	(HL),A		;CLEAR SCRATCHPAD
 	LD	(HIMEM),DE
 	LD	(PAGE),HL
 	CALL	NEWIT
-	JP	NZ,CHAIN0	;AUTO-RUN
+	;JP	NZ,CHAIN0	;AUTO-RUN
 	CALL	TELL
 VERMSG:	DEFM	'BBC BASIC (Z80) Version 5.00  '
 	DEFB	CR
@@ -958,8 +954,8 @@ WARMNC:	JP	NC,WARM
 	DEC	A
 	CALL	LTRAP
 	POP	HL		;RESTORE POINTER
+			LD	DE,0
 	LD	E,(HL)
-	LD	D,0
 	ADD	HL,DE		;ADDRESS NEXT LINE
 	POP	DE		;RESTORE IF-CLAUSE LEN
 	POP	BC		;RESTORE HI LINE NUMBER
@@ -989,7 +985,7 @@ RENUM1:	LD	A,(HL)		;BUILD TABLE
 	INC	HL
 	EXX
 	PUSH	HL
-	ADD	HL,BC		;ADD INCREMENT
+			ADD.S   HL,BC           	; Add the increment
 	JP	C,TOOBIG	;"Too big"
 	EXX
 	POP	BC
@@ -1000,8 +996,7 @@ RENUM1:	LD	A,(HL)		;BUILD TABLE
 	EX	DE,HL
 	DEC	HL
 	DEC	HL
-	XOR	A
-	LD	B,A
+			LD	BC, 0
 	LD	C,(HL)
 	ADD	HL,BC		;NEXT LINE
 	EX	DE,HL
@@ -1044,8 +1039,11 @@ RENUM3:	LD	C,(HL)
 	DEC	C
 	DEC	C
 	DEC	C
-	LD	B,0
-RENUM7:	LD	A,TLINO
+	LD	A,C
+	LD	BC,0
+	LD	C,A			; BC: Line length
+;
+RENUM7:	LD      A,TLINO			; A: The token code that precedes any line number encoded in BASIC (i.e. GOTO/GOSUB)
 	CPIR			;SEARCH FOR LINE NUMBER
 	JR	NZ,RENUM3
 	PUSH	BC
@@ -1066,7 +1064,7 @@ RENUM4:	LD	E,(HL)		;CROSS-REFERENCE TABLE
 	INC	HL
 	EX	DE,HL
 	OR	A		;CLEAR CARRY
-	SBC	HL,BC
+	SBC.S   HL,BC			; Compare by means of subtraction the OLD line number against the one in the heap
 	EX	DE,HL
 	LD	E,(HL)		;NEW NUMBER
 	INC	HL
@@ -1309,7 +1307,7 @@ CLEAN:	CALL	GETTOP
 	JR	CLEAR
 ;
 GETTOP:	LD	HL,(PAGE)
-	LD	B,0
+	LD	BC,0
 	LD	A,CR
 GETOP1:	LD	C,(HL)
 	INC	C
@@ -1342,7 +1340,7 @@ CLEAR:	PUSH	HL
 	LD	(LOMEM),HL
 	LD	(FREE),HL
 	LD	HL,DYNVAR
-	LD	B,2*(54+2)
+	LD	B,3*(54+2)
 CLEAR1:	LD	(HL),0
 	INC	HL
 	DJNZ	CLEAR1
@@ -1648,13 +1646,13 @@ ERROR3:	JP	ERROR
 ;
 GETVAR:	LD	A,(IY)
 	CP	'!'
-	JR	Z,GETV5
+	JP	Z,GETV5
 	CP	'?'
-	JR	Z,GETV6
+	JP	Z,GETV6
 	CP	'|'
-	JR	Z,GETVF
+	JP	Z,GETVF
 	CP	'$'
-	JR	Z,GETV4
+	JP	Z,GETV4
 	CALL	LOCATE
 	RET	NZ
 	LD	A,(IY)
@@ -1799,10 +1797,9 @@ GETDEF:	LD	A,(IY+1)
 ;
 LOCATE:	SUB	'@'
 	RET	C
-	LD	H,0
+	LD	HL,0
 	CP	'Z'-'@'+1
 	JR	NC,LOC0		;NOT STATIC
-	ADD	A,A
 	LD	L,A
 	LD	A,(IY+1)	;2nd CHARACTER
 	CP	'%'
@@ -1810,6 +1807,8 @@ LOCATE:	SUB	'@'
 	LD	A,(IY+2)
 	CP	'('
 	JR	Z,LOC1		;NOT STATIC
+
+	ADD	HL,HL
 	ADD	HL,HL
 	LD	DE,STAVAR	;STATIC VARIABLES
 	ADD	HL,DE
@@ -1826,23 +1825,27 @@ LOC0:	CP	'_'-'@'
 	DEC	A		;SET NZ
 	RET	C
 	SUB	3
-	ADD	A,A
 	LD	L,A
-LOC1:	LD	DE,DYNVAR	;DYNAMIC VARIABLES
-	DEC	L
-	DEC	L
-	SCF
-	RET	M
-	ADD	HL,DE
-LOC2:	LD	E,(HL)
-	INC	HL
-	LD	D,(HL)
-	LD	A,D
-	OR	E
-	JR	Z,LOC6		;UNDEFINED VARIABLE
-	LD	H,D
-	LD	L,E
+
+LOC1:	LD	A, L			; Fetch variable index
+	ADD	A, A			; x 2
+	ADD	A, L			; x 3
+	SUB	3			; Subtract 2 TODO: Should be 3
+	LD	L, A
+	LD      DE, DYNVAR       	; The dynamic variable storage
+	RET	C			; Bounds check to trap for variable '@'
+	ADD     HL, DE			; HL: Address of first entry
+LOC2:	LD	DE,(HL)
+	PUSH	HL			; Need to preserve HL for LOC6
+	XOR	A			; Reset carry flag
+	SBC	HL, HL			; Set HL to 0
+	SBC	HL, DE			; Compare with 0
+	POP	HL			; Restore the original pointer
+	JP	Z, LOC6			; If the pointer in DE is zero, the variable is undefined at this point
+	PUSH	DE			; Make a copy of this pointer in HL
+	POP	HL
 	INC	HL		;SKIP LINK
+	INC	HL
 	INC	HL
 	PUSH	IY
 LOC3:	LD	A,(HL)		;COMPARE
@@ -1893,14 +1896,14 @@ LOC6:	INC	A		;SET NZ
 ;
 CREATE:	XOR	A
 	LD	DE,(FREE)
-	LD	(HL),D
-	DEC	HL
-	LD	(HL),E
+	LD	(HL),DE
 	EX	DE,HL
 	LD	(HL),A
 	INC	HL
 	LD	(HL),A
 	INC	HL
+	LD      (HL),A
+	INC     HL
 LOC7:	INC	IY
 	CALL	RANGE		;END OF VARIABLE?
 	JR	C,LOC8
@@ -1925,7 +1928,7 @@ LOC8:	LD	(HL),0		;TERMINATOR
 	LD	A,D
 	OR	A		;STRING?
 	JP	P,LOC9
-	LD	A,4
+	LD	A,5
 LOC9:	LD	(HL),0		;INITIALISE TO ZERO
 	INC	HL
 	DEC	A

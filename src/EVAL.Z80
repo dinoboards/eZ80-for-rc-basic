@@ -39,6 +39,7 @@
 	GLOBAL	STR
 	GLOBAL	HEXSTR
 	GLOBAL	LOAD4
+	GLOBAL	LOAD4STR
 	GLOBAL	LOADN
 	GLOBAL	DLOAD5
 	GLOBAL	TEST
@@ -188,8 +189,6 @@ FUNTBL:	PTR	DECODE		;Line number
 ;
 TCMD	EQU	FUNTOK+($-FUNTBL)/2
 ;
-CR	EQU	0DH
-LF	EQU	0AH
 AND	EQU	80H
 DIV	EQU	81H
 EOR	EQU	82H
@@ -321,26 +320,28 @@ EXPR3B:	CALL	SAVE
 	CALL	DOIT
 	JR	EXPR3A
 ;
-EXPR3S:	EX	AF,AF'
+EXPR3S:	EX	AF,AF'		; Handle string concatenation
 	INC	IY		;BUMP PAST '+'
 	CALL	PUSHS		;SAVE STRING ON STACK
-	CALL	EXPR4		;SECOND STRING
+	CALL	EXPR4		; Fetch the second operand
 	EX	AF,AF'
-	JP	P,MISMAT
-	LD	C,E		;C=LENGTH
+	JP	P,MISMAT	; If it is not a string, then Error: "Type mismatch"
+	LD	BC,0
+	LD	C,E		; BC: Length of the second string
 	POP	DE
-	PUSH	DE
+	PUSH	DE		;get length of first string
 	LD	HL,ACCS
-	LD	D,H
-	LD	A,C
+	LD	A, E		; a = length of first string
+	LD	DE,ACCS
+	LD	E, A		; DE: Pointer to the end of the first string
+	LD	A, C
 	OR	A
-	JR	Z,EXP3S3
-	LD	B,L
-	LD	L,A		;SOURCE
-	ADD	A,E
-	LD	E,A		;DESTINATION
+	JR	Z,EXP3S3	; jump if length of first string is 0
+	LD	L,A		; l length of second string
+	ADD	A,E		; a = length of second string + length of first string
+	LD	E,A		; e = combined length
 	LD	A,19
-	JR	C,ERROR2	;"String too long"
+	JP	C,ERROR2	; A carry indicates string > 255 bytes, so Error: "String too long"
 	PUSH	DE
 	DEC	E
 	DEC	L
@@ -542,13 +543,13 @@ ITEM0:	CP	':'
 	CP	'+'
 	JP	Z,ITEMN		;UNARY PLUS
 	CP	'.'
-	JR	Z,CON		;NUMERIC CONSTANT
+	JP	Z,CON		;NUMERIC CONSTANT
 	CP	'&'
 	JP	Z,HEX		;HEX CONSTANT
 	CP	'%'
 	JR	Z,BIN		;BINARY CONSTANT
 	CP	'"'
-	JR	Z,CONS		;STRING CONSTANT
+	JP	Z,CONS		;STRING CONSTANT
 	CP	TTINT
 	JP	Z,TINT		;TINT FUNCTION
 ITEM2:	CP	TMOD
@@ -569,11 +570,21 @@ LOADN:	BIT	2,A
 	JR	Z,LOAD4		;INTEGER VARIABLE
 LOAD5:	LD	C,(IX+4)
 LOAD4:	EXX
+	LD	HL, 0			; TODO: Optimise
 	LD	L,(IX+0)
 	LD	H,(IX+1)
 	EXX
+	LD	HL, 0			; TODO: Optimise
 	LD	L,(IX+2)
 	LD	H,(IX+3)
+	RET
+
+LOAD4STR:
+	EXX
+	LD      L,(IX+0)		; The length of the string currently stored in the allocated space
+	LD      H,(IX+1)		; The maximum original string length
+	EXX
+	LD	HL,(IX+2)		; Address of the string (24-bit)
 	RET
 ;
 LOAD1:	LD	HL,0
@@ -702,16 +713,18 @@ DLOADN:	BIT	2,A
 	JR	Z,DLOAD4	;INTEGER VARIABLE
 DLOAD5:	LD	B,(IX+4)
 DLOAD4:	EXX
+	LD	DE, 0
 	LD	E,(IX+0)
 	LD	D,(IX+1)
 	EXX
+	LD	DE, 0
 	LD	E,(IX+2)
 	LD	D,(IX+3)
 	RET
 ;
 DLOAD1:	LD	DE,0
 	EXX
-	LD	D,0
+	LD	DE,0
 	LD	E,(IX+0)
 	EXX
 	RET
@@ -719,7 +732,7 @@ DLOAD1:	LD	DE,0
 LOADS:	LD	DE,ACCS
 	RRA
 	JR	NC,LOADS2	;FIXED STRING
-	CALL	LOAD4
+	CALL	LOAD4STR
 	EXX
 	LD	A,L
 	EXX
@@ -1860,21 +1873,25 @@ SCP3:	OR	A
 PUSHS:	LD	HL,ACCS
 	CALL	CHECK
 	POP	IX		;RETURN ADDRESS
-	OR	A		;CLEAR CARRY
-	LD	D,H
+	OR      A               ; Clear the carry flag
+	LD	BC,0		; BC: Length of the string
 	LD	C,E
-	SBC	HL,DE
-	ADD	HL,SP
-	LD	SP,HL
-	LD	B,A
-	PUSH	BC
-	JR	Z,PUSHS1	;ZERO LENGTH
-	EX	DE,HL
-	LD	B,0
-	LD	L,B		;L=0
-	LDIR			;COPY TO STACK
-	CALL	CHECK
-PUSHS1:	JP	(IX)		;"RETURN"
+	LD      HL,ACCS		; HL: Pointer to the string accumulator
+	LD	DE,ACCS
+	LD	E,C 		; DE: Pointer to the end of the string in the accumulator
+	SBC     HL,DE		; HL: Number of bytes to reserve on the stack (a negative number)
+	ADD     HL,SP		; Grow the stack
+	LD      SP,HL
+	LD      D,A		;  D: This needs to be set to A for some functions
+	LD	B,A		; Stack A and C (the string length)
+	PUSH    BC		; Note that this stacks 3 bytes, not 2; the MSB is irrelevant
+	LD	B,0		; Reset B to 0 for the LDIR in this function
+	JR      Z,PUSHS1        ; Is it zero length?
+	LD      DE,ACCS		; DE: Destination
+	EX      DE,HL		; HL: Destination, DE: Address on stack
+	LDIR			; Copy to stack
+	CALL    CHECK		; Final check to see if there is sufficient space on the stack
+PUSHS1:	JP      (IX)            ; Effectively "RET" (IX contains the return address)
 ;
 ;POP$ - RESTORE STRING FROM STACK.
 ;   Inputs: C = string length.
