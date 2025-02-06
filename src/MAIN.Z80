@@ -1530,7 +1530,7 @@ FINDL1:	LD	C,(HL)
 ;  Outputs: Line number in HL
 ; Destroys: B,C,D,E,H,L,F
 ;
-SETLIN:	LD	B,0
+SETLIN:	LD	BC,0
 	LD	DE,(CURLIN)
 	LD	HL,(PAGE)
 	OR	A
@@ -1547,6 +1547,7 @@ SET1:	LD	C,(HL)
 	JR	C,SET1
 	SBC	HL,BC
 	INC	HL
+	LD	DE,0
 	LD	E,(HL)		;LINE NUMBER
 	INC	HL
 	LD	D,(HL)
