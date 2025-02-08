@@ -2099,13 +2099,11 @@ USR2:	POP	IY
 ; RIGHT$(A$[,N]) = string
 ;
 LEFTSL: CALL    GETSTR
-	LOG LEFTSL_1 ; SHOULD DEFUALT VALUYE BE 0FFFF00H
 	LD	HL,0FF00H	;Default all but last
 	JR	NZ,MIDSL1
 	JR	MIDSL0
 ;
 RITESL: CALL	GETSTR
-	LOG RITESL_1 ; SHOULD DEFUALT VALUYE BE 0FFFFFFH
 	LD	HL,0FFFFH	;Default last char only
 	JR	NZ,MIDSL1
 	JR	MIDSL0
@@ -2153,8 +2151,7 @@ MIDSL1:	CALL	BRAKET
 	POP	HL
 	LD	C,E
 	LD	B,(IX+0)
-	LD	E,(IX+2)
-	LD	D,(IX+3)
+	LD	DE,(IX+2)
 ;
 ; Source string at ACCS, length C
 ; Destination string at DE, length B
