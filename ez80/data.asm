@@ -1,8 +1,11 @@
 
 	global	_LOMEM
 	global	_HIMEM
+	global	_ACCS
+
 _LOMEM	=	LOMEM
 _HIMEM = HIMEM
+_ACCS = ACCS
 
 
 	include "macros.inc"

@@ -50,6 +50,11 @@ void log_info(const char *name,
 
   p = (uint8_t *)hl;
   printf("*hl: %x %x\r\n", p[0], p[1]);
+
+  printf("ACCS: ");
+  for(int i = 0; i < 8; i++)
+    printf("%x ", ACCS[i]);
+  printf("\r\n");
 }
 
 

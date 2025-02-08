@@ -1662,10 +1662,21 @@ RIGHT0:	CALL	LEFT1
 	LD	C,E
 	LD	A,L
 	SUB	E
+
 RIGHT2:	LD	L,A
-RIGHT1:	LD	B,0
-	LD	H,D
-	LD	E,B
+RIGHT1:
+	; uBC <= C
+	; uH <= uD
+	; L <= L
+	; E <= 0
+	LD	A,L
+	PUSH	DE
+	POP	HL
+	LD	L,A
+	LD	E,0
+	LD	A,C
+	LD	BC,0
+	LD	C,A
 	LDIR			;MOVE
 	LD	A,80H
 	RET
