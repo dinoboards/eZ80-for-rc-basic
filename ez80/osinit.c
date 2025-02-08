@@ -3,8 +3,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-static const uint8_t test_values[16] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-                                        0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF};
+static const uint8_t test_values[16] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55,
+                                        0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB,
+                                        0xCC, 0xDD, 0xEE, 0xFF};
 
 bool test_at(volatile uint8_t *ptr) {
   const uint8_t *values = test_values;
@@ -21,7 +22,7 @@ bool test_at(volatile uint8_t *ptr) {
   return true;
 }
 
-#define _512K  (uint8_t *)0x200000 + 512 * 1024
+#define _512K (uint8_t *)0x200000 + 512 * 1024
 #define _1024K (uint8_t *)0x200000 + 1024 * 1024
 #define _1536K (uint8_t *)0x200000 + 1536 * 1024
 #define _2048K (uint8_t *)0x200000 + 2048 * 1024

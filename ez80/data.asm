@@ -2,11 +2,14 @@
 	global	_LOMEM
 	global	_HIMEM
 	global	_ACCS
+	global	_PAGE
+	global	_DYNVAR
 
 _LOMEM	=	LOMEM
 _HIMEM = HIMEM
 _ACCS = ACCS
-
+_PAGE = PAGE
+_DYNVAR = DYNVAR
 
 	include "macros.inc"
 

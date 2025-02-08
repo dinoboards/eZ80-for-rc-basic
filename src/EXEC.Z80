@@ -1279,6 +1279,7 @@ PROC5:	INC	HL		; Increment to the ON PROC flag address
 	EX	(SP),IY
 	POP	DE
 	LD	(HL),DE
+
 XEQGO:	JP	XEQ
 ;
 LOCERR:	INC	IY

@@ -8,6 +8,4 @@
 
 #include <stdio.h>
 
-uint24_t mos_oswrite(uint8_t ch) {
-  return ch;
-}
+uint24_t mos_oswrite(uint8_t ch) { return ch; }
