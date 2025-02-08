@@ -35,7 +35,7 @@ void log_info(const char *name,
               uint24_t    hl,
               uint24_t    ix,
               uint24_t    iy) {
-  printf("log: %s.  AF:%X, BC: %X, DE: %X, HL: %X, AF':%X, BC': %X, DE': %X, "
+  printf("log: %s.\r\nAF:%X, BC: %X, DE: %X, HL: %X, AF':%X, BC': %X, DE': %X, "
          "HL': %X, ix: %X, iy: %X\r\n",
          name, af, bc, de, hl, af_, bc_, de_, hl_, ix, iy);
 

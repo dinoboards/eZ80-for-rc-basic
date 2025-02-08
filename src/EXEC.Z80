@@ -1110,38 +1110,36 @@ PROC1:	CALL	CHECK
 	LD	HL,(PAGE)
 PROC2:	LD	A,TDEF
 	CALL	SEARCH		;LOOK FOR "DEF"
-	JR	C,PROC3
-	PUSH	HL
-	POP	IY
-	INC	IY		;SKIP DEF
-	CALL	NXT
-	CALL	GETDEF
-	PUSH	IY
-	POP	DE
-	JR	C,PROC6
+	JR	C,PROC3		; NOT FOUND
+	PUSH	HL		; ADDRESS OF PROC'S TOKEN START (DEF)
+	POP	IY		; IY IS PROC LINE
+	INC	IY		; SKIP DEF
+	CALL	NXT		; SKIPS SPACES
+	CALL	GETDEF		; SEARCH FOR FN/PROC CAHCED REFERENCED
+	PUSH	IY		; If Z: HL points to entry
+	POP	DE		; IY/de addresses delimiter
+	JR	C,PROC6		; NO MORE DEFS?
 	CALL	NZ,CREATE
 	PUSH	IY
 	POP	DE
-	LD	(HL),E
-	INC	HL
-	LD	(HL),D		;SAVE ADDRESS
+
+	LD	(HL),DE		;SAVE ADDRESS
 PROC6:	EX	DE,HL
 	LD	A,CR
-	LD	B,A
+	LD	BC,100H
 	CPIR			;SKIP TO END OF LINE
 	JR	PROC2
-PROC3:	POP	IY		;RESTORE TEXT POINTER
-	CALL	GETDEF
+PROC3:	POP	IY		;RESTORE TEXT POINTER BACK TO CALLER
+	CALL	GETDEF		; FIND THE FN/PROC (HL-> ENTRY, IY->DELIMITER)
 	LD	A,29
 	JR	NZ,ERROR3	;"No such FN/PROC"
-PROC4:	LD	E,(HL)
-	INC	HL
-	LD	D,(HL)		;GET ADDRESS
-	LD	HL,2
-	ADD	HL,SP
+PROC4:	;I THINK IY SHOULD BE TOKEN AFTER DEF OR AFTER NAME ???
+	LD	DE, (HL)	; HL: Address of pointer; fetch entity address in DE
+	LD	HL, 3
+	ADD	HL,SP		; WHAT IS ON THE STACK THAT HL POINTS TO?
 	CALL	NXT		;ALLOW SPACE BEFORE (
 	PUSH	DE		;EXCHANGE DE,IY
-	EX	(SP),IY
+	EX	(SP),IY		; WHY NOT PUSH/POP??????
 	POP	DE
 	CP	'('		;ARGUMENTS?
 	JP	NZ,PROC5
@@ -1203,8 +1201,8 @@ RETCHK:	EX	AF,AF'
 	INC	HL
 	PUSH	HL
 	POP	IX		;Address RETURNs table
-PROC0:	LD	E,A
-	LD	D,0
+PROC0:	LD	DE, 0
+	LD	E,A
 	EX	DE,HL
 	ADD	HL,HL
 	ADD	HL,HL
@@ -1269,10 +1267,10 @@ PROCB:	ADD	HL,DE
 	POP	HL
 	POP	DE
 ;
-PROC5:	LD	(HL),E		;SAVE "RETURN ADDRESS"
-	INC	HL
+PROC5:	INC	HL		; Increment to the ON PROC flag address
 	LD	A,(HL)
-	LD	(HL),D
+	DEC	HL
+	LD	(HL), DE
 	CP	TON		;WAS IT "ON PROC" ?
 	JR	NZ,XEQGO
 	PUSH	DE
@@ -1280,9 +1278,7 @@ PROC5:	LD	(HL),E		;SAVE "RETURN ADDRESS"
 	CALL	SPAN		;SKIP REST OF ON LIST
 	EX	(SP),IY
 	POP	DE
-	LD	(HL),D
-	DEC	HL
-	LD	(HL),E
+	LD	(HL),DE
 XEQGO:	JP	XEQ
 ;
 LOCERR:	INC	IY
@@ -2861,9 +2857,10 @@ RESLO4:	POP	HL
 	JR	RESLO1
 ;
 RESLO9:	LD	B,0
+	LOG SHOULD_BCU_BE_ZEROED
 	ADD	HL,BC
 	LD	SP,HL
-RESLGO:	JR	RESLO1
+RESLGO:	Jp	RESLO1
 ;
 RESLO5:	LD	HL,0
 	ADD	HL,SP
@@ -2957,6 +2954,9 @@ SAVLO2:	PUSH	AF		;STRING TYPE
 	LD	DE,ACCS
 	EX	DE,HL
 	LD	B,L
+
+	LOG VERIFY_BC	; IS BC CORRECT HERE??
+
 	LDIR			;SAVE STRING ON STACK
 	POP	DE
 SAVLO4:	PUSH	IX		;VARPTR
@@ -3093,21 +3093,30 @@ XTRAC1:	LD	A,(IY)
 	JR	XTRAC1
 ;
 DSRCH:	LD	A,TDATA
-SEARCH:	LD	B,0
-SRCH1:	LD	C,(HL)
-	INC	C
+
+; Search for a token at the start of a program line
+; - HL: Pointer to the start of a tokenised line in the program area
+; Returns:
+; - HL: Pointer to the
+; -  F: Carry set if not found
+; Corrupts:
+; - BC
+;
+SEARCH:	LD	BC,0
+SRCH1:	LD	C,(HL)		;  C: Fetch the line length
+	INC	C		; Check for 0, i.e. end of program marker
 	DEC	C
-	JR	Z,SRCH2		;FAIL
+	JR	Z,SRCH2		; Not found the token, so end
+	INC	HL		; Skip the line length and line number
 	INC	HL
 	INC	HL
-	INC	HL
-	CP	(HL)
-	RET	Z
-	DEC	C
+	CP	(HL)		; Compare with the token
+	RET	Z		; Found it, so return with carry not set
+	DEC	C		; Skip to the next line
 	DEC	C
 	DEC	C
 	ADD	HL,BC
-	JP	SRCH1
+	JR	SRCH1
 SRCH2:	DEC	HL		;POINT TO CR
 	SCF
 	RET
