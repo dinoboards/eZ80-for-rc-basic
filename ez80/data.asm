@@ -4,13 +4,16 @@
 	global	_ACCS
 	global	_PAGE
 	global	_DYNVAR
+	global _FNPTR
+	global _PROPTR
 
 _LOMEM	=	LOMEM
 _HIMEM = HIMEM
 _ACCS = ACCS
 _PAGE = PAGE
 _DYNVAR = DYNVAR
-
+_FNPTR = FNPTR
+_PROPTR = PROPTR
 	include "macros.inc"
 
 	section	.bss_on_chip, "aw", @progbits

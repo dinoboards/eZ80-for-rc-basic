@@ -28,5 +28,6 @@ extern uint8_t *DYNVAR[54];
 extern uint8_t FLAGS;
 extern uint8_t INKEY;
 extern uint24_t EDPTR;
-
+extern uint8_t* FNPTR;
+extern uint8_t* PROPTR;
 #endif

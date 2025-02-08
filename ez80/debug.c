@@ -53,7 +53,8 @@ void log_variable(int i, uint8_t *d) {
     for (int l = 0; l < len; l++)
       printf("%c", str[l]);
 
-    printf("'\r\n");
+    printf("', last_byte @ %p\r\n", d+2);
+
   } else
     printf("\r\n");
 
@@ -80,6 +81,7 @@ void inspect_all() {
     printf("%p: len: %d num: %d tok: %x\r\n", p, length, line_number, token);
     p += length;
   }
+  printf("%p: end\r\n", p);
 
   printf("\r\nDYNVAR @ %p:\r\n", DYNVAR);
   for (int i = 0; i < 54; i++) {
@@ -89,6 +91,13 @@ void inspect_all() {
     }
   }
   printf("\r\n");
+
+  printf("\r\nFNPTR @ %p\r\n", FNPTR);
+  if(FNPTR) {
+    for(int i = 0; i < 16; i++)
+      printf("%x ", FNPTR[i]);
+    printf("\r\n");
+  }
 }
 
 void log_info(const char *name, uint24_t af_, uint24_t bc_, uint24_t de_,
