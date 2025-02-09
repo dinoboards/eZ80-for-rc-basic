@@ -30,6 +30,9 @@ bool test_at(volatile uint8_t *ptr) {
 void osinit() {
   // init_font_patterns();
 
+  //TODO IF RUNNIN AS A CP/M COM APP, ENSURE ONLY USE MEM IN 64K PAGE
+  //IF RUNING IN EXE MODE, SWITCH TO THE ASSUME UPTO 2MB LINEAR RAM
+
   LOMEM = (uint8_t *)(((uint24_t)_heap + 255) & ~255);
   printf("LOMEM: %p\r\n", LOMEM);
 

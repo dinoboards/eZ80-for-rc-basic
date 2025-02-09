@@ -9,6 +9,8 @@ void debug() {
   printf("HIMEM: %p\r\n", HIMEM);
   printf("LOMEM: %p\r\n", LOMEM);
   printf("PAGE: %p\r\n", PAGE);
+  printf("FCB_BLOCKS: %p\r\n", FCB_BLOCKS);
+
   // printf("FCB: %p\r\n", CPM_SYS_FCB);
   // printf("DISK_BUFFER: %p\r\n", DISK_BUFFER);
   // printf("OPTVAL: %p, %x\r\n", &OPTVAL, OPTVAL);
