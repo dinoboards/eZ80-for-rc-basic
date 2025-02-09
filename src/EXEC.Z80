@@ -969,6 +969,18 @@ XEQGO2:	JP	XEQ
 ;
 ;FOR var = expr TO expr [STEP expr]
 ;
+; STACK FRAME ON EXIT
+;
+; 23 | X X TY (OPER, LIMIT TYPE)  | 3 BYTES
+; 21 | X H  L (LIMIT HIGH)        | 3 BYTES
+; 18 | X H' L' (LIMIT LOW)        | 3 BYTES
+; 15 | X OP TY (OPER, STEP TYPE)  | 3 BYTES
+; 12 | X H  L (STEP HIGH)         | 3 BYTES
+; 09 | X H' L' (STEP LOW)         | 3 BYTES
+; 06 | IY - TEXT POINTER          | 3 BYTES
+; 03 | LOOP VAR                   | 3 BYTES
+; 00 | RETURN ADDR - FORCHK       | 3 BYTES
+
 FOR:	CALL	ASSIGN
 	JP	NZ,FORVAR	;"FOR variable"
 	PUSH	AF		;SAVE TYPE
@@ -1027,7 +1039,7 @@ NEXT:	POP	BC		;MARKER
 	JR	ERROR3		;"Not in a FOR loop"
 ;
 NEXT2:	CALL	TERMQ
-	POP	HL
+	POP	HL		; LOOP VAR
 	PUSH	HL
 	PUSH	BC
 	PUSH	HL
@@ -1035,13 +1047,26 @@ NEXT2:	CALL	TERMQ
 	POP	DE
 	EX	DE,HL
 	OR	A
+
+; Stack Frame
+; 26 | X X TY (OPER, LIMIT TYPE)  | 3 BYTES
+; 23 | X H  L (LIMIT HIGH)        | 3 BYTES
+; 21 | X H' L' (LIMIT LOW)        | 3 BYTES
+; 18 | X OP TY (OPER, STEP TYPE)  | 3 BYTES
+; 15 | X H  L (STEP HIGH)         | 3 BYTES
+; 12 | X H' L' (STEP LOW)         | 3 BYTES IX*
+; 09 | IY - TEXT POINTER          | 3 BYTES
+; 06 | LOOP VAR                   | 3 BYTES
+; 03 | xxxxx                      | 3 BYTES
+; 00 | xxxxx                      | 3 BYTES
+
 NEXT0:	SBC	HL,DE
 	JR	NZ,NEXT1
 	PUSH	DE
-	LD	IX,6+2
-	ADD	IX,SP
-	CALL	DLOAD5		;STEP
-	LD	A,(IX+11)	;TYPE
+	LD	IX,4*3
+	ADD	IX,SP		;IX -> STEP VAL
+	CALL	DLOAD5_SPL	;STEP
+	LD	A,(IX+16)	;OPERATION TYPE < OR >
 	POP	IX
 	CALL	LOADN		;LOOP VARIABLE
 	PUSH	AF
@@ -1050,15 +1075,27 @@ NEXT0:	SBC	HL,DE
 	JR	C,ERROR3
 	POP	AF		;RESTORE TYPE
 	CALL	STOREN		;UPDATE VARIABLE
-	LD	IX,12
+	LD	IX,6*3
 	ADD	IX,SP
-	CALL	DLOAD5		;LIMIT
-	LD	A,(IX-1)
-	CALL	FPP		;TEST AGAINST LIMIT
+
+; Stack Frame
+; 23 | X X TY (OPER, LIMIT TYPE)  | 3 BYTES
+; 21 | X H  L (LIMIT HIGH)        | 3 BYTES
+; 18 | X H' L' (LIMIT LOW)        | 3 BYTES *IX
+; 15 | X OP TY (OPER, STEP TYPE)  | 3 BYTES
+; 12 | X H  L (STEP HIGH)         | 3 BYTES
+; 09 | X H' L' (STEP LOW)         | 3 BYTES
+; 06 | IY - TEXT POINTER          | 3 BYTES
+; 03 | LOOP VAR                   | 3 BYTES
+; 00 | xxxxx                      | 3 BYTES
+
+	CALL	DLOAD5_SPL	;LIMIT
+	LD	A,(IX-2)
+	CALL	FPP		;TEST AGAINST LIMIT  ( HLH'L'C TO DED'E'B ???)
 	JR	C,ERROR3
 	INC	H
 	JR	NZ,LOOP		;KEEP LOOPING
-	LD	HL,18
+	LD	HL,9*3
 	ADD	HL,SP
 	LD	SP,HL
 	CALL	NLIST
@@ -1072,7 +1109,7 @@ LOOP:	POP	BC
 	PUSH	BC
 	JP	XEQ
 ;
-NEXT1:	LD	HL,18
+NEXT1:	LD	HL,9*3
 	ADD	HL,SP
 	LD	SP,HL		;"POP" THE STACK
 	POP	BC

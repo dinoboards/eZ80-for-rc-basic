@@ -1,0 +1,4 @@
+
+*.z80 diff=assembly
+*.Z80 diff=assembly
+*.asm diff=assembly

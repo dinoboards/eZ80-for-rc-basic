@@ -53,7 +53,7 @@ void log_variable(int i, uint8_t *d) {
     for (int l = 0; l < len; l++)
       printf("%c", str[l]);
 
-    printf("', last_byte @ %p\r\n", d+2);
+    printf("', last_byte @ %p\r\n", d + 2);
 
   } else
     printf("\r\n");
@@ -93,8 +93,8 @@ void inspect_all() {
   printf("\r\n");
 
   printf("\r\nFNPTR @ %p\r\n", FNPTR);
-  if(FNPTR) {
-    for(int i = 0; i < 16; i++)
+  if (FNPTR) {
+    for (int i = 0; i < 16; i++)
       printf("%x ", FNPTR[i]);
     printf("\r\n");
   }
@@ -108,13 +108,16 @@ void log_info(const char *name, uint24_t af_, uint24_t bc_, uint24_t de_,
          name, af, bc, de, hl, af_, bc_, de_, hl_, ix, iy);
 
   uint8_t *p = (uint8_t *)ix;
-  printf("*iX: ");
-  for (int i = 0; i < 8; i++)
+  printf("*ix: ");
+  for (int i = -6; i < 20; i++)
     printf("%x ", p[i]);
   printf("\r\n");
 
   p = (uint8_t *)iy;
-  printf("*iy: %x %x\r\n", p[0], p[1]);
+  printf("*iy: ");
+  for (int i = -6; i < 20; i++)
+    printf("%x ", p[i]);
+  printf("\r\n");
 
   p = (uint8_t *)hl;
   printf("*hl: %x %x\r\n", p[0], p[1]);

@@ -721,6 +721,16 @@ DLOAD4:	EXX
 	LD	E,(IX+2)
 	LD	D,(IX+3)
 	RET
+
+	global	DLOAD5_SPL
+DLOAD5_SPL:
+	LD      B,(IX+6)
+	EXX
+	LD	DE, (IX+0)
+	EXX
+	LD	DE, (IX+3)
+	RET
+
 ;
 DLOAD1:	LD	DE,0
 	EXX
