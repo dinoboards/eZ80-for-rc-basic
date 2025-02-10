@@ -304,7 +304,7 @@ OSBGET:	PUSH	DE
 ;
 OSSTAT:	CALL	FIND
 	DEC	HL
-	LD	A,(HL)
+	LD	A,(HL)			; FCB?[-1]
 	INC	A
 	RET
 ;
@@ -338,11 +338,14 @@ GETPTR:	CALL	FIND
 	ADD	A,A
 	DEC	HL
 GETPT1:	DEC	HL
+	LD	DE,0
 	LD	D,(HL)
 	DEC	HL
 	LD	E,(HL)
 	DEC	HL
-	LD	H,(HL)
+	LD	B,(HL)
+	LD	HL,0
+	LD	H,B
 	LD	L,A
 	SRL	D
 	RR	E
@@ -355,46 +358,55 @@ GETPT1:	DEC	HL
 ;           DEHL = new pointer (0-&7FFFFF)
 ; Destroys: A,B,C,D,E,H,L,F
 ;
-PUTPTR:	LD	D,L
-	ADD	HL,HL
-	RL	E
-	LD	B,E
-	LD	C,H
+PUTPTR:	LD	D,L		; D EQUAL LOW BYTE OF ADDR
+	ADD	HL,HL		; HL *= 2
+	RL	E		; E *= 2
+	LD	B,E		; B = U OF ADDR*2
+	LD	C,H		; C = MID OF ADDR*2
+
+	; BCL = ADDR*2
+	; ECL = ADDR*2
+	; EHL = ADDR*2
+	; BHL = ADDR*2
+	; BC = CP/M RECORD NUMBER
+	; D = LOW OF ADDR
+
 	LD	E,A		;CHANNEL
 	PUSH	DE
 	CALL	FIND
 	POP	AF
 	AND	7FH
-	BIT	7,(HL)		;PENDING WRITE?
+	BIT	7,(HL)		;PENDING WRITE?  FCB?:0
 	JR	Z,PUTPT1
 	OR	80H
-PUTPT1:	LD	(HL),A
+PUTPT1:	LD	(HL),A		; FCB?:0 (LOW OF ADDR & 7F)
 	PUSH	DE
 	PUSH	HL
+	DEC	HL		;
 	DEC	HL
 	DEC	HL
+	LD	DE, 0
+	LD	D,(HL)		; FCB?:-3
 	DEC	HL
-	LD	D,(HL)
-	DEC	HL
-	LD	E,(HL)
+	LD	E,(HL)		; FCB?:-4
 	EX	DE,HL
 	OR	A
-	SBC	HL,BC
+	SBC.S	HL,BC		; FCB?[-3] - NEW RECORD NUMBER
 	POP	HL
 	POP	DE
-	RET	Z
-	INC	HL
+	RET	Z		; IF SAME, JUST RETURN
+	INC	HL		; FCB?[1]
 	OR	A
 	CALL	M,WRITE
-	PUSH	HL
+	PUSH	HL		; FCB?[1]
+	DEC	HL		; FCB?[0]
+	DEC	HL		; FCB?[-1]
+	DEC	HL		; FCB?[-2]
+	LD	(HL),0		; FCB?[-2]
 	DEC	HL
+	LD	(HL),B		; FCB?[-3]
 	DEC	HL
-	DEC	HL
-	LD	(HL),0
-	DEC	HL
-	LD	(HL),B
-	DEC	HL
-	LD	(HL),C		;NEW RECORD NO.
+	LD	(HL),C		; FCB?[-4] NEW RECORD NO.
 	POP	HL
 	JR	RDF
 ;
@@ -438,10 +450,17 @@ INCRDF:	CALL	INCSEC
 	INC	A
 	RET
 ;
+; * POSSIBLE ISSUE - NZ DOES NOT ACTUALLY INDICATE EOF STATE
+; CP/M's BOS FUNCTION 33 (Read Random), CAN RETURN NZ IN
+; CASES WHERE ATTEMPT TO READ A RECORD THAT HAS YET TO BEEN WRITTEN
+; TO YET. (EG: 1 Reading unwritten data)
+; THE BBCBASIC TEST FILE (TESTFILE.BBC) WILL FAIL IN THE REVERSE
+; WRITING TEST FOR EOF STATUS (LINE 550 OF TESTFILE.BBC)
+
 ;READ - Read a record from a disk file.
 ;   Inputs: DE addresses FCB.
 ;           HL = address to store data.
-;  Outputs: A<>0 & Z-flag reset indicates EOF.
+;  Outputs: A<>0 & Z-flag reset indicates EOF*.
 ;           Carry = 0
 ; Destroys: A,F
 ;
@@ -469,8 +488,7 @@ READ:	PUSH	HL
 	POP	BC
 	POP	DE
 	POP	HL
-
-	OR	A		;*
+	OR	A		;* CAN BE ANY BDOS RESULT (INCLUDING 1 - READING UNWRITTEN DATA)
 	RET			;*
 BDOS1:	CALL	BDOS0
 	JR	NZ,CPMERR
@@ -621,13 +639,13 @@ FIND1:	LD	A,E
 	LD	HL, 0			; HL = A
 	LD	DE, 0
 	LD	E,A
-	LD	L, A
-	ADD	HL, HL			; HL *= 3
+	LD	L,A
+	ADD	HL,HL			; HL *= 3
 	ADD	HL,DE
-	LD	DE, TABLE		; DE = TABLE
-	ADD	HL, DE			; HL = &TABLE[A]
+	LD	DE,TABLE		; DE = TABLE
+	ADD	HL,DE			; HL = &TABLE[A]
 	XOR	A
-	LD	DE, (HL)		; DE = *HL
+	LD	DE,(HL)			; DE = *HL
 	INC	HL
 	INC	HL
 	CP	E
@@ -658,7 +676,7 @@ FIND1:	LD	A,E
 SETUP0:	LD	A,' '
 SETUP:	PUSH	DE
 	PUSH	HL
-	LD	DE,FCB+9
+	LD	DE,FCB+9		; EXTENSION
 	LD	HL,BBC
 	LD	BC,3
 	LDIR
