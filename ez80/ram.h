@@ -5,7 +5,6 @@
 
 extern uint8_t *HIMEM;
 extern uint8_t *LOMEM;
-extern uint8_t CPM_SYS_FCB[36];
 extern uint8_t DISK_BUFFER[128];
 extern uint8_t ACCS[256];
 extern uint8_t BUFFER[256];

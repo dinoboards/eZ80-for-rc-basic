@@ -1,5 +1,6 @@
 #include "ram.h"
 // #include "vdu.h"
+#include <cpm.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -30,11 +31,19 @@ bool test_at(volatile uint8_t *ptr) {
 void osinit() {
   // init_font_patterns();
 
-  //TODO IF RUNNIN AS A CP/M COM APP, ENSURE ONLY USE MEM IN 64K PAGE
-  //IF RUNING IN EXE MODE, SWITCH TO THE ASSUME UPTO 2MB LINEAR RAM
+#ifdef COM_APP
+  printf("COM VERSION\r\n");
+#else
+  printf("EXE VERSION\r\n");
+#endif
 
   LOMEM = (uint8_t *)(((uint24_t)_heap + 255) & ~255);
   printf("LOMEM: %p\r\n", LOMEM);
+
+#ifdef COM_APP
+  uint16_t *cpm_himem = (uint16_t *)(((uint8_t *)cpm_mbase) + 0x6);
+  HIMEM = (uint8_t *)(cpm_mbase + *cpm_himem);
+#else
 
   HIMEM = _512K; // assume at least 512K
 
@@ -52,6 +61,7 @@ void osinit() {
     return;
 
   HIMEM = _2048K; // assume at 2MB
+#endif
 
   printf("HIMEM: %p\r\n", HIMEM);
   printf("%d bytes available\r\n", HIMEM - LOMEM);
