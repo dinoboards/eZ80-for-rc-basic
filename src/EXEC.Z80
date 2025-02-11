@@ -2292,7 +2292,7 @@ EXIT1:	LD	A,E
 	JP	ERROR		;'Bad EXIT'
 ;
 EXIT4:	POP	BC		;VARPTR
-	LD	HL,14		;Skip text pointer, limit & step
+	LD	HL,7*3		;Skip text pointer, limit & step
 	ADD	HL,SP
 	LD	SP,HL		;Pop FOR record
 	CP	TFOR
