@@ -8,6 +8,15 @@ Implements Version BBC Basic V5 as per upstream repo https://github.com/rtrussel
 
 Currently not yet operational - very much a work in progress...
 
+## Recommended Git Configuration
+
+To ensure consistent handling of TAB characters as 8 spaces and improved diff output for assembly files, add the following to your local Git configuration:
+
+```sh
+git config core.pager 'less -x9'
+git config diff.assembly.xfuncname "^\\s*\\w+:"
+```
+
 ### history/changes
 
 * The project is forked from https://github.com/rtrussell/BBCZ80.
