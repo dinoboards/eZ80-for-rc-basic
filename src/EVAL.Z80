@@ -1913,7 +1913,9 @@ PUSHS:	LD	HL,ACCS
 	LD      D,A		;  D: This needs to be set to A for some functions
 	LD	B,A		; Stack A and C (the string length)
 	PUSH    BC		; Note that this stacks 3 bytes, not 2; the MSB is irrelevant
-	LD	B,0		; Reset B to 0 for the LDIR in this function
+	LD	A, C
+	LD	BC,0		; Reset B to 0 for the LDIR in this function
+	LD	C, A
 	JR      Z,PUSHS1        ; Is it zero length?
 	LD      DE,ACCS		; DE: Destination
 	EX      DE,HL		; HL: Destination, DE: Address on stack
@@ -1929,7 +1931,9 @@ PUSHS1:	JP      (IX)            ; Effectively "RET" (IX contains the return addr
 ;
 POPS:	POP	IX		;RETURN ADDRESS
 	LD	HL,0
-	LD	B,H		;B=0
+	LD	A,C
+	LD	BC,0
+	LD	C,A
 	ADD	HL,SP
 	LD	DE,ACCS
 	INC	C
