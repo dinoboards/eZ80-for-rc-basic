@@ -1,4 +1,5 @@
 #include "ram.h"
+#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -25,6 +26,25 @@ void debug() {
   // for (int i = 0; i < 8; i++) {
   //   printf("  TABLE[%d]: %p\r\n", i, TABLE[i]);
   // }
+}
+
+float convert_to_float(uint8_t *p) {
+  float mantissa = 0.0;
+  uint8_t exponent = p[4] - 127;
+
+  for (uint8_t i = 0; i < 4; i++) {
+    const int byteValue = p[3 - i];
+    const int exponent = -(i * 8 + 8);
+    const float byteFraction = byteValue * pow(2, exponent);
+    mantissa += byteFraction;
+  }
+
+  // Add the implicit leading 1
+  mantissa += 0.5;
+
+  const float realNumber = mantissa * pow(2, exponent);
+
+  return realNumber;
 }
 
 void log_variable(int i, uint8_t *d) {
@@ -57,8 +77,17 @@ void log_variable(int i, uint8_t *d) {
 
     printf("', last_byte @ %p\r\n", d + 2);
 
-  } else
-    printf("\r\n");
+  } else {
+    if (d[4] == 0)
+      printf(", int: %ld\r\n", *((int32_t *)d));
+    else
+      printf(", float: %f \r\n", convert_to_float(d));
+
+    // for(int i = 0; i < 5; i++) {
+    //   printf("%x ", *d++);
+    // }
+    // printf("\r\n");
+  }
 
   if (next)
     log_variable(i, next);
@@ -111,40 +140,40 @@ void log_info(const char *name, uint24_t *sp, uint24_t af_, uint24_t bc_,
 
   printf("*sp: (%p) ", sp);
   for (int i = 0; i < 7; i++)
-    printf("%X ", sp[i]);
+    printf("%2X ", sp[i]);
 
   printf("\r\n");
 
   uint8_t *p = (uint8_t *)ix;
   printf("*ix: ");
   for (int i = -6; i < 0; i++)
-    printf("%x ", p[i]);
+    printf("%2x ", p[i]);
 
   printf(" | ");
 
   for (int i = 0; i < 20; i++)
-    printf("%x ", p[i]);
+    printf("%2x ", p[i]);
 
   printf("\r\n");
 
   p = (uint8_t *)iy;
   printf("*iy: ");
   for (int i = -6; i < 0; i++)
-    printf("%x ", p[i]);
+    printf("%2x ", p[i]);
 
   printf(" | ");
 
   for (int i = 0; i < 20; i++)
-    printf("%x ", p[i]);
+    printf("%2x ", p[i]);
 
   printf("\r\n");
 
   p = (uint8_t *)hl;
-  printf("*hl: %x %x\r\n", p[0], p[1]);
+  printf("*hl: %2x %2x\r\n", p[0], p[1]);
 
   printf("ACCS: ");
   for (int i = 0; i < 8; i++)
-    printf("%x ", ACCS[i]);
+    printf("%2x ", ACCS[i]);
   printf("\r\n");
 }
 
