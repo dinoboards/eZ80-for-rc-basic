@@ -2492,7 +2492,7 @@ STACCS:	LD	HL,ACCS
 ;
 
 STORES:	RRA
-	JR	NC,STORE4STR	;FIXED STRING
+	JR	NC,STORS3	;FIXED STRING
 	PUSH	HL
 	CALL	LOAD4STR
 	LD	A,E		; E : Length of string in ACCS (as passed to the function)
