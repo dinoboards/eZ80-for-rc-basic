@@ -586,7 +586,7 @@ LOAD4STR:
 ;
 LOAD1:	LD	HL,0
 	EXX
-	LD	H,0
+	LD	HL,0
 	LD	L,(IX+0)
 	EXX
 	RET
