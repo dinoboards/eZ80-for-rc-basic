@@ -22,6 +22,10 @@ BACK_SLASH	EQU	5Ch
 
 .macro			log name
 	PUSH	IY
+
+	LD	IY, 3
+	ADD	IY, SP
+
 	PUSH	IX
 	PUSH	HL
 	PUSH	DE
@@ -33,10 +37,15 @@ BACK_SLASH	EQU	5Ch
 	PUSH	BC
 	EX	AF, AF'
 	PUSH	AF
+
+	PUSH	IY
+
 	LD	HL, .XX\@
 	push	hl
+
 	CALL	_log_info
 	pop	hl
+	POP	IY	; SP
 	POP	AF
 	EX	AF, AF'
 	POP	BC
