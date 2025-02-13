@@ -83,14 +83,23 @@ void log_variable(int i, uint8_t *d) {
     else
       printf(", float: %f \r\n", convert_to_float(d));
 
-    // for(int i = 0; i < 5; i++) {
-    //   printf("%x ", *d++);
-    // }
-    // printf("\r\n");
+    for (int i = 0; i < 5; i++) {
+      printf("%x ", *d++);
+    }
+    printf("\r\n");
   }
 
   if (next)
     log_variable(i, next);
+}
+
+void print_number(uint16_t high, uint16_t low, uint8_t exp) {
+  if (exp == 0) {
+    printf("%ld\r\n", (((int32_t)high << 16) + low));
+  } else {
+    uint8_t hl_number[5] = {high >> 8, high & 0xFF, low >> 8, low & 0xff, exp};
+    printf("%f\r\n", convert_to_float(hl_number));
+  }
 }
 
 void inspect_all() {
@@ -140,40 +149,40 @@ void log_info(const char *name, uint24_t *sp, uint24_t af_, uint24_t bc_,
 
   printf("*sp: (%p) ", sp);
   for (int i = 0; i < 7; i++)
-    printf("%2X ", sp[i]);
+    printf("%02X ", sp[i]);
 
   printf("\r\n");
 
   uint8_t *p = (uint8_t *)ix;
   printf("*ix: ");
   for (int i = -6; i < 0; i++)
-    printf("%2x ", p[i]);
+    printf("%02X ", p[i]);
 
   printf(" | ");
 
-  for (int i = 0; i < 20; i++)
-    printf("%2x ", p[i]);
+  for (int i = 0; i < 12; i++)
+    printf("%02X ", p[i]);
 
   printf("\r\n");
 
   p = (uint8_t *)iy;
   printf("*iy: ");
   for (int i = -6; i < 0; i++)
-    printf("%2x ", p[i]);
+    printf("%02X ", p[i]);
 
   printf(" | ");
 
-  for (int i = 0; i < 20; i++)
-    printf("%2x ", p[i]);
+  for (int i = 0; i < 12; i++)
+    printf("%02X ", p[i]);
 
   printf("\r\n");
 
   p = (uint8_t *)hl;
-  printf("*hl: %2x %2x\r\n", p[0], p[1]);
+  printf("*hl: %02x %02x\r\n", p[0], p[1]);
 
   printf("ACCS: ");
-  for (int i = 0; i < 8; i++)
-    printf("%2x ", ACCS[i]);
+  for (int i = 0; i < 6; i++)
+    printf("%02X ", ACCS[i]);
   printf("\r\n");
 }
 
