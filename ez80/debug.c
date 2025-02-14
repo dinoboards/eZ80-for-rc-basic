@@ -28,6 +28,7 @@ void debug() {
   // }
 }
 
+#if 0
 float convert_to_float(uint8_t *p) {
   float mantissa = 0.0;
   uint8_t exponent = p[4] - 127;
@@ -46,6 +47,7 @@ float convert_to_float(uint8_t *p) {
 
   return realNumber;
 }
+#endif
 
 void log_variable(int i, uint8_t *d) {
   printf("%c: %p ", i + 'A', d);
@@ -81,7 +83,7 @@ void log_variable(int i, uint8_t *d) {
     if (d[4] == 0)
       printf(", int: %ld\r\n", *((int32_t *)d));
     else
-      printf(", float: %f \r\n", convert_to_float(d));
+      printf(", float: ??\r\n");
 
     for (int i = 0; i < 5; i++) {
       printf("%x ", *d++);
@@ -93,6 +95,7 @@ void log_variable(int i, uint8_t *d) {
     log_variable(i, next);
 }
 
+#if 0
 void print_number(uint16_t high, uint16_t low, uint8_t exp) {
   if (exp == 0) {
     printf("%ld\r\n", (((int32_t)high << 16) + low));
@@ -101,6 +104,7 @@ void print_number(uint16_t high, uint16_t low, uint8_t exp) {
     printf("%f\r\n", convert_to_float(hl_number));
   }
 }
+#endif
 
 void inspect_all() {
   printf("FLAGS: %x, INKEY: %x, EDPTR: %X\r\n", FLAGS, INKEY, EDPTR);
@@ -178,7 +182,8 @@ void log_info(const char *name, uint24_t *sp, uint24_t af_, uint24_t bc_,
   printf("\r\n");
 
   p = (uint8_t *)hl;
-  printf("*hl: %02x %02x\r\n", p[0], p[1]);
+  printf("*hl: %02X %02X %02X %02X %02X %02X\r\n", p[0], p[1], p[2], p[3], p[4],
+         p[5]);
 
   printf("ACCS: ");
   for (int i = 0; i < 6; i++)
