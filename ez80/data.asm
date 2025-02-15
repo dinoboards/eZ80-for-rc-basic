@@ -8,6 +8,7 @@
 	global _PROPTR
 	global _DATPTR
 	global _FREE
+	GLOBAL _LOCCHK
 
 _LOMEM	=	LOMEM
 _HIMEM = HIMEM

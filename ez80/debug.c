@@ -10,6 +10,7 @@ void debug() {
   printf("LOMEM: %p\r\n", LOMEM);
   printf("PAGE: %p\r\n", PAGE);
   printf("FCB_BLOCKS: %p\r\n", FCB_BLOCKS);
+  printf("LOCCHK: %p\r\n", LOCCHK);
 
   // printf("FCB: %p\r\n", CPM_SYS_FCB);
   // printf("DISK_BUFFER: %p\r\n", DISK_BUFFER);

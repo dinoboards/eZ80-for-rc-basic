@@ -19,7 +19,7 @@ extern uint32_t STAVAR[27];
 extern uint24_t FREE;
 extern uint8_t FCB_BLOCKS[];
 extern uint24_t FREE_FCB_TABLE;
-
+extern uint8_t LOCCHK[];
 extern uint8_t *PAGE;
 
 extern uint8_t *DYNVAR[54];
