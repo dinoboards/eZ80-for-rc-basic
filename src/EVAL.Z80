@@ -2091,8 +2091,8 @@ LETARR:	RES	6,D		;Lose array marker
 	PUSH	BC
 	PUSH	HL
 	CALL	X14OR5		;DE = size in bytes
-	LD	B,D
-	LD	C,E
+	PUSH	DE
+	POP	BC
 	POP	IX
 	POP	DE
 ;
@@ -2122,11 +2122,11 @@ LETA0:	LD	(HL),0
 	LD	A,B
 	OR	C
 	JR	NZ,LETA0	;Clear allocated stack
+	LD	BC, 0
 	LD	C,(HL)
 	INC	HL
 	LD	B,(HL)
-	LD	H,A
-	LD	L,A
+	LD	HL, 0
 	ADD	HL,SP
 ;
 ;	CALL	NXT
@@ -2254,9 +2254,9 @@ ITEMA:	CALL	NXT
 ITEMA1:	PUSH	DE		;Type and operator
 	CALL	GETVAR
 	POP	DE		;Type & operator
-	JR	NZ,ITEMA4	;Non-array expression
+	Jp	NZ,ITEMA4	;Non-array expression
 	BIT	6,A
-	JR	Z,ITEMA4	;Not a whole array
+	Jp	Z,ITEMA4	;Not a whole array
 	POP	BC		;Junk saved original op
 	POP	BC		;Junk saved text pointer
 	RES	6,A
@@ -2306,6 +2306,7 @@ ITEMA2:	PUSH	BC
 ; Process string array item (just copy descriptors):
 ;
 ITEMA3:	EX	DE,HL		;DE = destination
+	LOG ITEMA3_1
 	LD	H,B
 	LD	L,C
 	ADD	HL,HL
@@ -2403,8 +2404,9 @@ ARRDOT:	INC	IY		;Bump past dot
 	CALL	ARRLEN
 	POP	AF
 	EX	DE,HL
-	LD	L,(IX)
-	LD	H,(IX+1)	;Indirect pointer
+	LOG ARRDOT_1
+	LD	HL,(IX)
+	; LD	H,(IX+1)	;Indirect pointer
 	LD	L,(HL)		;No. of dimensions
 	DEC	L
 	EX	DE,HL
