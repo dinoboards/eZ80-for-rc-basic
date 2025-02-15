@@ -223,6 +223,10 @@ void log_info(const char *name, uint24_t *sp, uint24_t af_, uint24_t bc_,
   printf("*hl: %02X %02X %02X %02X %02X %02X\r\n", p[0], p[1], p[2], p[3], p[4],
          p[5]);
 
+  p = (uint8_t *)de;
+  printf("*de: %02X %02X %02X %02X %02X %02X\r\n", p[0], p[1], p[2], p[3], p[4],
+         p[5]);
+
   printf("ACCS: ");
   for (int i = 0; i < 6; i++)
     printf("%02X ", ACCS[i]);
