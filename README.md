@@ -1,8 +1,8 @@
-# BBC BASIC port for ez80-for-rc kit
+# BASIC Interpreter for the ez80-for-rc kit
 
-A port of BBC Basic for eZ80 to run in ADL mode on the ez80-for-rc RC2014/RCBus kit
+A port of BBC Basic for Z80 by R.T.Russell.  Modified to run in ADL mode on the ez80-for-rc RC2014/RCBus kit.
 
-Implements Version BBC Basic V5 as per upstream repo https://github.com/rtrussell/BBCZ80
+Should be generally compatible with BBC Basic V5 for the Z80 as per upstream repo https://github.com/rtrussell/BBCZ80
 
 ### Status
 

@@ -663,7 +663,8 @@ ARRLEN:	LD	A,(HL)		;Number of dimensions
 	OR	A
 	JR	Z,ARRAY
 	LD	DE,1
-ARLOOP:	LD	C,(HL)
+ARLOOP:	LD	BC, 0
+	LD	C,(HL)
 	INC	HL
 	LD	B,(HL)		;BC = size of this dimension
 	INC	HL
