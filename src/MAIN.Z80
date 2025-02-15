@@ -1828,7 +1828,7 @@ LOC0:	CP	'_'-'@'
 LOC1:	LD	A, L			; Fetch variable index
 	ADD	A, A			; x 2
 	ADD	A, L			; x 3
-	SUB	3			; Subtract 2 TODO: Should be 3
+	SUB	3			;
 	LD	L, A
 	LD      DE, DYNVAR       	; The dynamic variable storage
 	RET	C			; Bounds check to trap for variable '@'

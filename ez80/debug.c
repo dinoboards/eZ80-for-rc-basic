@@ -6,7 +6,6 @@
 #include <stdlib.h>
 
 void debug() {
-  printf("debug:\r\n");
   printf("HIMEM: %p\r\n", HIMEM);
   printf("LOMEM: %p\r\n", LOMEM);
   printf("PAGE: %p\r\n", PAGE);
@@ -28,7 +27,6 @@ void debug() {
   // }
 }
 
-#if 0
 float convert_to_float(uint8_t *p) {
   float mantissa = 0.0;
   uint8_t exponent = p[4] - 127;
@@ -47,52 +45,80 @@ float convert_to_float(uint8_t *p) {
 
   return realNumber;
 }
-#endif
 
-void log_variable(int i, uint8_t *d) {
-  printf("%c: %p ", i + 'A', d);
-  uint8_t lb = *d++;
-  uint8_t mb = *d++;
-  uint8_t ub = *d++;
-  uint8_t *next =
-      (uint8_t *)(((uint24_t)ub << 16) + ((uint24_t)mb << 8) + (uint24_t)lb);
-  printf("Next: %p, '", next);
+uint8_t log_str_z(uint8_t **str_ref) {
+  uint8_t *str = *str_ref;
 
-  bool is_string = false;
-  while (*d != 0) {
-    is_string = *d == '$';
-    printf("%c", *d++);
+  int i = 50;
+  while (*str) {
+    if (i-- > 0)
+      putchar(*str++);
+    else
+      str++;
   }
-  printf("'");
 
-  d++;
+  if (i < 0)
+    printf("...");
 
-  if (is_string) {
+  *str_ref = str + 1;
+  return str[-1];
+}
+
+void log_fn_proc(const char *prefix, uint8_t *proc) {
+  if (!proc)
+    return;
+
+  printf("%06X: ", (uint24_t)proc);
+  uint24_t next_proc = *((uint24_t *)proc);
+
+  proc += 3;
+  printf("%s", prefix);
+  log_str_z(&proc);
+
+  uint24_t proc_ptr = *((uint24_t *)proc);
+  printf(" @ %06X %02X %02X LB: %06X\r\n", proc_ptr, proc[3], proc[4],
+         (uint24_t)proc + 4);
+
+  log_fn_proc(prefix, (uint8_t *)next_proc);
+}
+
+void log_proc(uint8_t *proc) { log_fn_proc("PROC", proc); }
+
+void log_fn(uint8_t *fn) { log_fn_proc("FN", fn); }
+
+void log_variable(uint8_t i, uint8_t *d) {
+  if (!d)
+    return;
+
+  printf("%06X: ", (uint24_t)d);
+  uint24_t next_var = *((uint24_t *)d);
+  d += 3;
+
+  putchar(i);
+  uint8_t last_char = log_str_z(&d);
+
+  if (last_char == '$') {
     uint8_t len = *d++;
     uint8_t max_len = *d++;
-    printf(", len: %d, max: %d ", len, max_len);
-
     char *str = *((char **)d);
-    printf("%p: '", str);
-    for (int l = 0; l < len; l++)
-      printf("%c", str[l]);
+    d += 3;
+    printf(" len: %d max: %d @ %06X LB: %06X ", len, max_len, (uint24_t)str,
+           (uint24_t)(d - 1));
 
-    printf("', last_byte @ %p\r\n", d + 2);
+    printf("\r\n%06X: ", (uint24_t)str);
+    for (int l = 0; l < len; l++)
+      putchar(str[l]);
+
+    printf("  LB: %06X\r\n", (uint24_t)(str + len - 1));
 
   } else {
     if (d[4] == 0)
-      printf(", int: %ld\r\n", *((int32_t *)d));
+      printf(" i: %ld LB: %06X\r\n", *((int32_t *)d), (uint24_t)(d + 4));
     else
-      printf(", float: ??\r\n");
-
-    for (int i = 0; i < 5; i++) {
-      printf("%x ", *d++);
-    }
-    printf("\r\n");
+      printf(" f: %f LB: %06X\r\n", convert_to_float(d), (uint24_t)(d + 4));
   }
 
-  if (next)
-    log_variable(i, next);
+  log_variable(i, (uint8_t *)next_var);
 }
 
 #if 0
@@ -106,9 +132,14 @@ void print_number(uint16_t high, uint16_t low, uint8_t exp) {
 }
 #endif
 
-void inspect_all() {
-  printf("FLAGS: %x, INKEY: %x, EDPTR: %X\r\n", FLAGS, INKEY, EDPTR);
+uint8_t valid_var_char(uint8_t c) {
+  if (c < 26)
+    return c + 'A';
 
+  return c + 69; // a-z
+}
+
+void inspect_all() {
   printf("\r\nPROGAM @ %p:\r\n", PAGE);
   uint8_t *p = PAGE;
   while (1) {
@@ -122,26 +153,31 @@ void inspect_all() {
     uint16_t line_number = ln_msb * 256 + ln_lsb;
     uint8_t token = p[3];
 
-    printf("%p: len: %d num: %d tok: %x\r\n", p, length, line_number, token);
+    printf("%p: %d -- len: %d tok: %x\r\n", p, line_number, length, token);
     p += length;
   }
   printf("%p: end\r\n", p);
 
-  printf("\r\nDYNVAR @ %p:\r\n", DYNVAR);
-  for (int i = 0; i < 54; i++) {
+  printf("\r\nDynamic Variables:\r\n");
+  for (uint8_t i = 0; i < 54; i++) {
     uint8_t *d = DYNVAR[i];
-    if (d != 0) {
-      log_variable(i, d);
-    }
+    log_variable(valid_var_char(i), d);
   }
-  printf("\r\n");
 
-  printf("\r\nFNPTR @ %p\r\n", FNPTR);
-  if (FNPTR) {
+  printf("\r\n");
+  log_fn(FNPTR);
+
+  printf("\r\n");
+  log_proc(PROPTR);
+
+  printf("\r\nDATPTR @ %p\r\n", DATPTR);
+  if (DATPTR) {
     for (int i = 0; i < 16; i++)
-      printf("%x ", FNPTR[i]);
+      printf("%x ", DATPTR[i]);
     printf("\r\n");
   }
+
+  printf("\r\nFREE: %06X\r\n", FREE);
 }
 
 void log_info(const char *name, uint24_t *sp, uint24_t af_, uint24_t bc_,
