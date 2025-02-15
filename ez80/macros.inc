@@ -10,6 +10,13 @@ ESC:		EQU     1BH
 SINGLE_QUOTE	EQU 	27H
 BACK_SLASH	EQU	5Ch
 
+; STRING VALUES REFERENCES ARE STORED IN 5 BYTES
+; | OFFSET | SIZE | DESCRIPTION |
+; |   0    |   1  | Current stored string length        |
+; |   1    |   1  | The current allocated storage size  |
+; |  2-5   |   3  | The pointer to the actual string    |
+STRVAL_SIZE	EQU	5
+
 .macro	ASEG
 .endm
 
