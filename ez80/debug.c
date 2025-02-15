@@ -105,11 +105,13 @@ void log_variable(uint8_t i, uint8_t *d) {
     printf(" len: %d max: %d @ %06X LB: %06X ", len, max_len, (uint24_t)str,
            (uint24_t)(d - 1));
 
-    printf("\r\n%06X: ", (uint24_t)str);
-    for (int l = 0; l < len; l++)
-      putchar(str[l]);
+    if (str) {
+      printf("\r\n%06X: ", (uint24_t)str);
+      for (int l = 0; l < len; l++)
+        putchar(str[l]);
 
-    printf("  LB: %06X\r\n", (uint24_t)(str + len - 1));
+      printf("  LB: %06X\r\n", (uint24_t)(str + len - 1));
+    }
 
   } else {
     if (d[4] == 0)

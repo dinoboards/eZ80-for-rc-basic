@@ -1931,9 +1931,11 @@ PUSHS1:	JP      (IX)            ; Effectively "RET" (IX contains the return addr
 ;
 POPS:	POP	IX		;RETURN ADDRESS
 	LD	HL,0
+	PUSH	AF
 	LD	A,C
 	LD	BC,0
 	LD	C,A
+	POP	AF
 	ADD	HL,SP
 	LD	DE,ACCS
 	INC	C

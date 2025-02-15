@@ -20,6 +20,10 @@ BACK_SLASH	EQU	5Ch
 .macro VDU	c
 .endm
 
+.macro log_inspect
+	CALL	safe_inspect_all
+.endm
+
 .macro			log name
 	PUSH	IY
 
