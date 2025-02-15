@@ -1389,7 +1389,6 @@ MODUP:	PUSH	DE
 	EXX
 	LD	A,14
 	PUSH	IX
-	LOG MODUP_4
 	CALL	FPP		;Square
 	POP	IX
 	JP	C,ERROR
@@ -1406,7 +1405,7 @@ MODUP:	PUSH	DE
 	CALL	FPP		;Accumulate
 	JP	C,ERROR
 	POP	AF
-	LD	D,0
+	LD	DE,0
 	LD	E,A
 	ADD	IX,DE		;Bump to next element
 	POP	DE
