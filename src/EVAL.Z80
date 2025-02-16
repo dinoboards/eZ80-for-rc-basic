@@ -1286,12 +1286,11 @@ SUMLEN:	INC	IY		;Skip LEN
 	PUSH	HL
 	POP	IX		;IX addresses array
 	XOR	A
-	LD	H,A
-	LD	L,A
-	LD	B,A
+	LD	HL,0
+	LD	BC,0
 SUMLN1:	LD	C,(IX)
 	ADD	HL,BC
-	LD	C,4
+	LD	C,STRVAL_SIZE
 	ADD	IX,BC
 	DEC	DE		;Count elements
 	LD	A,D
