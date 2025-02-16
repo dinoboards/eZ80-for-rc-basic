@@ -121,7 +121,7 @@ void log_variable(uint8_t i, uint8_t *d) {
     printf(" @ %06X LB: %06X\r\n", (uint24_t)array_description,
            (uint24_t)(d - 1));
 
-    if (array_description) {
+    if (array_description && (uint24_t)array_description != 1) {
       uint24_t total_elements = 0;
       printf("%06X: ARRAY(", (uint24_t)array_description);
       uint8_t dimensions = *array_description++;

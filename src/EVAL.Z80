@@ -687,13 +687,11 @@ GETARR:	CALL	NXT
 	JP	Z,NOSUCH
 	AND	8FH
 	LD	B,A		;Type + size
-GETAR1:	LD	A,(HL)
-	INC	HL
-	LD	H,(HL)
-	LD	L,A
+GETAR1:	LD	HL,(HL)
+	LD	A,L
 	AND	0FEH
 	OR	H
-	JR	Z,ARRAY		;Bad use of array
+	JR	Z,ARRAY           ;Bad use of array
 	RET
 ;
 GETARB:	CALL	NXT
@@ -2081,7 +2079,7 @@ STORA1:	PUSH	DE
 ;
 LETARR:	RES	6,D		;Lose array marker
 	PUSH	DE		;Save type & opcode
-	CALL	GETAR1		;Get and check indirect link
+	CALL	GETAR1		;Get indirect link
 	CALL	ARRLEN		;DE = elements, HL addresses first
 	POP	BC		;BC = type & opcode
 	LD	A,B		;A = type
@@ -2408,9 +2406,7 @@ ARRDOT:	INC	IY		;Bump past dot
 	CALL	ARRLEN
 	POP	AF
 	EX	DE,HL
-	LOG ARRDOT_1
-	LD	HL,(IX)
-	; LD	H,(IX+1)	;Indirect pointer
+	LD	HL,(IX)		;Indirect pointer
 	LD	L,(HL)		;No. of dimensions
 	DEC	L
 	EX	DE,HL
@@ -2429,7 +2425,6 @@ ARRDOT:	INC	IY		;Bump past dot
 	JR	Z,ARR1D
 	LD	H,(IY-1)
 	LD	L,(IY-2)
-	LOG ARRDOT_2
 ARR1D:	PUSH	DE
 	EX	DE,HL
 	CALL	X14OR5
@@ -2437,7 +2432,6 @@ ARR1D:	PUSH	DE
 	POP	DE
 	LD	B,(IX-1)
 	LD	C,(IX-2)
-	LOG ARRDOT_2
 ;
 ; A = type, Z-flag set if first array is one-dimensional
 ; BC = no. of rows of first source array (inner loop counter)
