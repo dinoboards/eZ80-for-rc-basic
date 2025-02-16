@@ -1230,7 +1230,7 @@ RETCHK:	EX	AF,AF'
 	SBC	HL,BC
 	ADD	HL,BC
 	EX	(SP),HL
-	Jp	NZ,PROC5	;No RETURNs
+	JR	NZ,PROC5	;No RETURNs
 ;
 	PUSH	DE
 	PUSH	HL
@@ -1287,18 +1287,14 @@ PROC9:	POP	IX
 ;
 ; Increment past stacked data:
 ;
-PROCA:	LD	DE,3
+PROCA:	LD	DE,5		;for none array walk sp+5 bytes
 	BIT	6,B
-	JR	Z,NOT_ARRAY_ARG
-	; JR	NZ,PROCB	;Whole array
-	LOG STACK_WALKING_PROBABLY_WRONG
-	JR	PROCB
-NOT_ARRAY_ARG:
-	LD	E,8
+	JR	NZ,PROCB	;Whole array
+	LD	E,8		;For numeric, walk sp+8 bytes
 	BIT	7,B
 	JR	Z,PROCB		;Numeric
 	LD	E,C
-	INC	DE
+	INC	DE		;Otherwise walk sp+10
 	INC	DE
 PROCB:	ADD	HL,DE
 	LD	BC,(HL)
@@ -2964,12 +2960,12 @@ SAVLO6:	PUSH	DE
 	EXX
 	PUSH	HL
 	PUSH	BC
-	JR	SAVLO4
+	Jp	SAVLO4
 ;
 SAVLO3:	LD	BC,(IX+0)	;ARRAY POINTER
 	PUSH	BC		;SAVE TO STACK
 	PUSH	AF		;SAVE TYPE
-	JR	SAVLO4
+	Jp	SAVLO4
 ;
 SAVLO2:	PUSH	AF		;STRING TYPE
 	PUSH	DE
@@ -2986,6 +2982,7 @@ SAVLO2:	PUSH	AF		;STRING TYPE
 	POP	AF		;LEVEL STACK
 	LD	HL,0
 	LD	B,L
+	LOG SAVLO2_1
 	SBC	HL,BC
 	ADD	HL,SP
 	LD	SP,HL
@@ -2996,6 +2993,7 @@ SAVLO2:	PUSH	AF		;STRING TYPE
 	LD	DE,ACCS
 	EX	DE,HL
 	LD	B,L
+	LOG SAVLO2_2
 	LDIR			;SAVE STRING ON STACK
 	POP	DE
 SAVLO4:	PUSH	IX		;VARPTR
@@ -3277,7 +3275,7 @@ MISQUO:	LD	A,9
 ;
 ; X14OR5 - multiply by 1, 4 or 5
 ;   Inputs: DE = number to be multiplied
-;           A = 1, 4 or 5 (else multiply by 4)
+;           A = 1, 4 or 5 (else multiply by 5)
 ;  Outputs: DE = DE * A
 ;           Carry set if overflow
 ; Destroys: D,E,H,L,F
@@ -3329,7 +3327,7 @@ CHNL:	INC	IY		;SKIP '#'
 	RET
 ;
 ; FREESA - Free members of a string array if adjacent to the top of heap
-;   Inputs: BC = length of array (= 4 * number of elements)
+;   Inputs: BC = length of array (= 5(STRVAL_SIZE) * number of elements)
 ;           HL addresses array first byte *above* array
 ;  Outputs: NZ if any array element freed, Z if none
 ; Destroys: nothing
@@ -3339,17 +3337,17 @@ FREES0:	PUSH	BC
 	PUSH	DE
 	PUSH	HL
 	XOR	A
-	LD	D,B
-	LD	E,C
-	LD	B,A
+	PUSH	BC
+	POP	DE
+	LD	BC,0
 FREES1:	PUSH	DE
 	DEC	HL
-	LD	D,(HL)
 	DEC	HL
-	LD	E,(HL)
 	DEC	HL
-	LD	C,(HL)
+	LD	DE,(HL)		;String Pointer
 	DEC	HL
+	LD	C,(HL)		;Allocated length
+	DEC	HL		;actual length
 	PUSH	HL
 	LD	HL,(FREE)
 	EX	DE,HL
@@ -3362,7 +3360,7 @@ FREES1:	PUSH	DE
 	OR	H
 FREES2:	POP	DE
 	POP	HL
-	LD	C,4
+	LD	BC,STRVAL_SIZE
 	OR	A
 	SBC	HL,BC
 	EX	DE,HL
