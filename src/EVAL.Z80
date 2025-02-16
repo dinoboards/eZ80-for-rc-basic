@@ -1320,7 +1320,7 @@ SUMUP:	PUSH	DE
 	CALL	FPP
 	JP	C,ERROR
 	POP	AF
-	LD	D,0
+	LD	DE,0
 	LD	E,A
 	ADD	IX,DE		;Bump to next element
 	POP	DE
