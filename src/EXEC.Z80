@@ -2719,8 +2719,7 @@ ARGUE7:	CALL	POPS
 ;
 ARGUE8:	POP	BC		;ARRAY POINTER
 	POP	IX
-	LD	(IX+0),C
-	LD	(IX+1),B
+	LD	(IX+0),BC
 	JR	ARGUE6
 ;
 ;Restore RETURNed parameters, via the stack to ensure that
