@@ -1,0 +1,45 @@
+name: BBCBASIC eZ80 Project
+
+on:
+  push:
+    branches:
+      - main/ez80-adl
+      - ez80-adl/*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Get latest ez80-clang release URL
+      id: get_release
+      run: |
+        releases=$(curl -s "https://api.github.com/repos/dinoboards/ez80-clang/releases")
+        versions=$(echo "$releases" | grep -oP '"tag_name": "\K(.*)(?=")' | sort -Vr)
+        latest_version=$(echo "$versions" | head -n 1)
+        latest_url=$(echo "$releases" | grep -oP '"browser_download_url": "\K(.*)(?=")' | grep "$latest_version" | grep ".tar.gz")
+        echo "::set-output name=url::$latest_url"
+
+    - name: install ez80-clang
+      run: |
+        wget --progress=dot:giga ${{ steps.get_release.outputs.url }}
+        tar -xzvf $(basename ${{ steps.get_release.outputs.url }})
+        cd $(basename ${{ steps.get_release.outputs.url }} .tar.gz)
+        sudo ./install.sh
+
+    - name: Build BBCeZ80.EXE
+      working-directory: ez80
+      run: |
+        source /home/runner/.ez80-clang
+        make
+
+    - name: Archive binary
+      uses: actions/upload-artifact@v4
+      with:
+        compression-level: 0
+        name: BBCeZ80.EXE
+        path: |
+          ez80/bin/BBCeZ80.EXE
