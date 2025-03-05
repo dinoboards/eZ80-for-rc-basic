@@ -7,11 +7,6 @@ all: BBCeZ80.EXE
 
 FILES := main.asm exec.asm eval.asm math.asm asmb.asm data.asm dist.asm hook.asm cmos.asm debug.c osinit.c vdu.c timer.c nanoprintf.c
 
-# .PHONY: BBCeZ80.COM
-# BBCeZ80.COM:
-# 	@mkdir -p ./bin
-# 	@ez80-cc -DCOM_APP --lib v99x8-standard --output-dir  ./bin --optimise size BBCeZ80.COM $(FILES)
-
 .PHONY: BBCeZ80.EXE
 BBCeZ80.EXE:
 	@mkdir -p ./bin

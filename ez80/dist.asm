@@ -1,7 +1,5 @@
 	include "macros.inc"
-	; include "../src/DIST.Z80"
 
-; CPM:		EQU	0x200005	; CP/M extended memory marshaller
 CPM:		EQU	cpm_bdos_adl	; CP/M extended memory marshaller
 
 	GLOBAL	_main
