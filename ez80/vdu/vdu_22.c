@@ -1,6 +1,6 @@
 #include "../bbcbasic.h"
 #include "../vdu.h"
-#include <v99x8.h>
+#include <v99x8-super.h>
 
 #include <stdio.h>
 
@@ -15,29 +15,47 @@
 // MODE 6: no graphics, 40x25 characters, 2 colours, 8kB RAM
 // MODE 7: teletext, 40x25 characters, 8 colours, 1kB RAM
 
-// BBC MODE   | V9958 MODE
-//    xx      | MULTI-COLOR   64x48 16 colours                            8,9
-//    xx      | G1            32*8x24*8 16 colours only 256 patterns      10,11
-//    xx      | G3            32*8x24*8 16 colours 768 patterns           12
-//    xx      | G4 (212)      256x212 16 colours    => 2,5                13
-//    xx      | G4 (192)      256x192 16 colours                          15
-//    xx      | G5 (212)      512x212 4 colours     => 0,1,4              16
-//    xx      | G5 (192)      512x192 4 colours                           17
-//    xx      | G6 (212)      512x212 16 colours                          18
-//    xx      | G6 (192)      512x192 16 colours                          19
-//    xx      | G7 (212)      256x212 256 colours                         20
-//    xx      | G7 (192)      256x192 256 colours                         21
+//  V9958 MODE
+//  MULTI-COLOR   64x48 16 colours
+//  G1            32*8x24*8 16 colours only 256 patterns
+//  G3            32*8x24*8 16 colours 768 patterns
+//  G4 (212)      256x212 16 colours
+//  G4 (192)      256x192 16 colours
+//  G5 (212)      512x212 4 colours
+//  G5 (192)      512x192 4 colours
+//  G6 (212)      512x212 16 colours
+//  G6 (192)      512x192 16 colours
+//  G7 (212)      256x212 256 colours
+//  G7 (192)      256x192 256 colours
+
+// SUPER 1        320 x 200 256 colours @ 60Hz
+// SUPER 2        320 x 240 256 colours @ 50Hz
+// SUPER 3        360 x 240 256 colours @ 60Hz
+// SUPER 4        360 x 288 256 colours @ 50Hz
+// SUPER 5        640 x 400 256 colours @ 60Hz
+// SUPER 6        640 x 480 256 colours @ 50Hz
+// SUPER 7        720 x 480 256 colours @ 60Hz
+// SUPER 8        720 x 576 256 colours @ 50Hz
 
 //    xx      | xx - serial I/O  MODE 255 (-1)
+
+// BBC MODE   | SUPER MODE | MAP
+//   0        |    5       | 640x256 => 640x400 (60Hz)
+//   1        |    2       | 320x256 => 320x240 (50Hz)
+//   2        |    2       | 160x256 => 320x240 (50Hz)
+//   3        |    5       | 80x25 ch => (640x400) 60hz
+//   4        |    2       | 320x256 => 320x240 (50Hz)
+//   5        |    2       | 160x256 => 320x240 (50Hz)
+//   6        |    1       | 40x25 ch => 320x200 (50Hz)
+//   7        |    1       | 40x25 ch => 320x200 (50Hz)
 
 // VDU 22 This VDU code is used to change MODE. It is followed by one number
 // which is the new mode. Thus VDU 22,7 is exactly equivalent to MODE 7.
 
 void vdu_mode() {
-  vdp_set_lines(212);
   current_display_mode = data[0];
-  last_text_row = 26;
   tviewport.left = 0;
+  last_text_row = 26;
   tviewport.bottom = 26;
   tviewport.top = 0;
 
@@ -47,9 +65,11 @@ void vdu_mode() {
     current_tfg_colour = 1;
     current_tbg_colour = 0;
     current_mode_colour_mask = 1;
-    last_text_column = 63;
-    tviewport.right = 63;
-    vdp_set_graphic_5();
+    last_text_column = 79;
+    tviewport.right = 79;
+    last_text_row = 49;
+    tviewport.bottom = 49;
+    vdp_set_super_graphic_5();
     break;
 
   case 1:
@@ -57,19 +77,11 @@ void vdu_mode() {
     current_tfg_colour = 3;
     current_tbg_colour = 0;
     current_mode_colour_mask = 3;
-    last_text_column = 63;
-    tviewport.right = 63;
-    vdp_set_graphic_5();
-    break;
-
-  case 4:
-    vdp_set_palette(default_2_colour_palette);
-    current_tfg_colour = 1;
-    current_tbg_colour = 0;
-    current_mode_colour_mask = 1;
-    last_text_column = 63;
-    tviewport.right = 63;
-    vdp_set_graphic_5();
+    last_text_column = 39;
+    tviewport.right = 39;
+    last_text_row = 29;
+    tviewport.bottom = 29;
+    vdp_set_super_graphic_2();
     break;
 
   case 2:
@@ -77,9 +89,35 @@ void vdu_mode() {
     current_tfg_colour = 7;
     current_tbg_colour = 0;
     current_mode_colour_mask = 15;
-    last_text_column = 31;
-    tviewport.right = 31;
-    vdp_set_graphic_4();
+    last_text_column = 39;
+    tviewport.right = 39;
+    last_text_row = 29;
+    tviewport.bottom = 29;
+    vdp_set_super_graphic_2();
+    break;
+
+  case 3:
+    vdp_set_palette(default_2_colour_palette);
+    current_tfg_colour = 1;
+    current_tbg_colour = 0;
+    current_mode_colour_mask = 1;
+    last_text_column = 79;
+    tviewport.right = 79;
+    last_text_row = 49;
+    tviewport.bottom = 49;
+    vdp_set_super_graphic_5();
+    break;
+
+  case 4:
+    vdp_set_palette(default_2_colour_palette);
+    current_tfg_colour = 1;
+    current_tbg_colour = 0;
+    current_mode_colour_mask = 1;
+    last_text_column = 39;
+    tviewport.right = 39;
+    last_text_row = 29;
+    tviewport.bottom = 29;
+    vdp_set_super_graphic_2();
     break;
 
   case 5:
@@ -87,9 +125,11 @@ void vdu_mode() {
     current_tfg_colour = 3;
     current_tbg_colour = 0;
     current_mode_colour_mask = 3;
-    last_text_column = 31;
-    tviewport.right = 31;
-    vdp_set_graphic_4();
+    last_text_column = 39;
+    tviewport.right = 39;
+    last_text_row = 29;
+    tviewport.bottom = 29;
+    vdp_set_super_graphic_2();
     break;
 
   case 255:

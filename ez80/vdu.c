@@ -23,6 +23,19 @@ uint24_t mos_oswrite(uint8_t ch) {
     return -1;
   }
 
+  if (ch == 12) { // cls
+    if (current_display_mode != 255)
+      vdu_cls();
+
+    return 0x0C; // send formfeed to serial
+  }
+
+  if (ch == 17) { // vdu_colour
+    current_fn = vdu_colour;
+    vdu_required_length = 1;
+    return -1;
+  }
+
   if (ch == 22) { // MODE
     current_fn = vdu_mode;
     vdu_required_length = 1;

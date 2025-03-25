@@ -1,6 +1,8 @@
 #include "../vdu.h"
 #include <v99x8.h>
 
+#include <stdio.h>
+
 /*
 // VDU 12
 VDU 12 clears either the current text viewport (by default or after a VDU 4

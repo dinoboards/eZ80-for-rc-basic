@@ -134,7 +134,10 @@ INKEY1:	POP	BC
 ;	  (Customise to suit your VDU)
 ; 	  Destroys: A,D,E,H,L,F
 ;
-CLS:	RET
+CLS:	MOS_VDU	12
+	XOR     A
+	LD      (COUNT),A
+	JP      XEQ
 ;
 ;PCSR	- Move cursor to specified position.
 ;   	  Inputs: DE = horizontal position (LHS=0)
