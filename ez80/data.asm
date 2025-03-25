@@ -31,3 +31,8 @@ _FREE = FREE
 	global	conversion_store
 
 conversion_store:	ds 		4		; Scratch pad to convert integer representations
+
+	global	_IY
+
+_IY:	d24 	0
+

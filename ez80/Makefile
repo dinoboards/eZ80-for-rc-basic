@@ -5,7 +5,8 @@ MAKEFLAGS += --no-builtin-rules
 
 all: BBCeZ80.EXE
 
-FILES := main.asm exec.asm eval.asm math.asm asmb.asm data.asm dist.asm hook.asm cmos.asm debug.c osinit.c vdu.c timer.c nanoprintf.c
+FILES := main.asm exec.asm eval.asm math.asm asmb.asm data.asm dist.asm hook.asm cmos.asm debug.c osinit.c vdu.c timer.c nanoprintf.c graphics.asm
+FILES += vdu/variables.c vdu/vdu_22.c vdu/logic_to_physical_coords.c vdu/vdu_12.c
 
 .PHONY: BBCeZ80.EXE
 BBCeZ80.EXE:

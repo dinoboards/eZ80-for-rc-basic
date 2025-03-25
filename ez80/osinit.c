@@ -23,12 +23,12 @@ static bool test_at(volatile uint8_t *ptr) {
   return true;
 }
 
-
 /* seach from heap up - and discover how much ram is installed above heap */
 /* return the address of the byte just above available ram*/
 /* assumes a 64k paging */
-static uint8_t* find_mem_top(uint8_t* heap) {
-  uint8_t* current = (uint8_t *)(((uint24_t)heap + 65535) & ~65535);;
+static uint8_t *find_mem_top(uint8_t *heap) {
+  uint8_t *current = (uint8_t *)(((uint24_t)heap + 65535) & ~65535);
+  ;
 
   while (test_at(current))
     current += 0x10000; // Increment by 64K blocks

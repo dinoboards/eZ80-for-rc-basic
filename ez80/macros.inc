@@ -27,6 +27,11 @@ STRVAL_SIZE	EQU	5
 .macro VDU	c
 .endm
 
+.macro 	MOS_VDU	val
+	LD	A, \val
+	CALL	OSWRCH
+.endm
+
 .macro log_inspect
 	CALL	safe_inspect_all
 .endm
