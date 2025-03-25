@@ -29,12 +29,12 @@ void debug() {
 }
 
 float convert_to_float(uint8_t *p) {
-  float mantissa = 0.0;
+  float   mantissa = 0.0;
   uint8_t exponent = p[4] - 127;
 
   for (uint8_t i = 0; i < 4; i++) {
-    const int byteValue = p[3 - i];
-    const int exponent = -(i * 8 + 8);
+    const int   byteValue    = p[3 - i];
+    const int   exponent     = -(i * 8 + 8);
     const float byteFraction = byteValue * pow(2, exponent);
     mantissa += byteFraction;
   }
@@ -77,8 +77,7 @@ void log_fn_proc(const char *prefix, uint8_t *proc) {
   log_str_z(&proc);
 
   uint24_t proc_ptr = *((uint24_t *)proc);
-  printf(" @ %06X %02X %02X LB: %06X\r\n", proc_ptr, proc[3], proc[4],
-         (uint24_t)proc + 4);
+  printf(" @ %06X %02X %02X LB: %06X\r\n", proc_ptr, proc[3], proc[4], (uint24_t)proc + 4);
 
   log_fn_proc(prefix, (uint8_t *)next_proc);
 }
@@ -99,12 +98,11 @@ void log_variable(uint8_t i, uint8_t *d) {
   uint8_t last_char = log_str_z(&d);
 
   if (last_char == '$') {
-    uint8_t len = *d++;
+    uint8_t len     = *d++;
     uint8_t max_len = *d++;
-    char *str = *((char **)d);
+    char   *str     = *((char **)d);
     d += 3;
-    printf(" len: %d max: %d @ %06X LB: %06X ", len, max_len, (uint24_t)str,
-           (uint24_t)(d - 1));
+    printf(" len: %d max: %d @ %06X LB: %06X ", len, max_len, (uint24_t)str, (uint24_t)(d - 1));
 
     if (str) {
       printf("\r\n%06X: ", (uint24_t)str);
@@ -118,8 +116,7 @@ void log_variable(uint8_t i, uint8_t *d) {
   else if (last_char == '(') {
     uint8_t *array_description = *((uint8_t **)d);
     d += 3;
-    printf(" @ %06X LB: %06X\r\n", (uint24_t)array_description,
-           (uint24_t)(d - 1));
+    printf(" @ %06X LB: %06X\r\n", (uint24_t)array_description, (uint24_t)(d - 1));
 
     if (array_description && (uint24_t)array_description != 1) {
       uint24_t total_elements = 0;
@@ -137,10 +134,8 @@ void log_variable(uint8_t i, uint8_t *d) {
 
       printf(")  LB: %06X\r\n", (uint24_t)(array_description - 1));
 
-      printf("%06X: ARRAY DATA: .... LB: (1B: %06X, 4B: %06X, 5B: %06X)\r\n",
-             (uint24_t)(array_description),
-             (uint24_t)(array_description + total_elements - 1),
-             (uint24_t)(array_description + total_elements * 4 - 1),
+      printf("%06X: ARRAY DATA: .... LB: (1B: %06X, 4B: %06X, 5B: %06X)\r\n", (uint24_t)(array_description),
+             (uint24_t)(array_description + total_elements - 1), (uint24_t)(array_description + total_elements * 4 - 1),
              (uint24_t)(array_description + total_elements * 5 - 1));
     }
 
@@ -181,10 +176,10 @@ void inspect_all() {
     if (length == 0)
       break;
 
-    uint8_t ln_lsb = p[1];
-    uint8_t ln_msb = p[2];
+    uint8_t  ln_lsb      = p[1];
+    uint8_t  ln_msb      = p[2];
     uint16_t line_number = ln_msb * 256 + ln_lsb;
-    uint8_t token = p[3];
+    uint8_t  token       = p[3];
 
     printf("%p: %d -- len: %d tok: %x\r\n", p, line_number, length, token);
     p += length;
@@ -213,9 +208,18 @@ void inspect_all() {
   printf("\r\nFREE: %06X\r\n", FREE);
 }
 
-void log_info(const char *name, uint24_t *sp, uint24_t af_, uint24_t bc_,
-              uint24_t de_, uint24_t hl_, uint24_t af, uint24_t bc, uint24_t de,
-              uint24_t hl, uint24_t ix, uint24_t iy) {
+void log_info(const char *name,
+              uint24_t   *sp,
+              uint24_t    af_,
+              uint24_t    bc_,
+              uint24_t    de_,
+              uint24_t    hl_,
+              uint24_t    af,
+              uint24_t    bc,
+              uint24_t    de,
+              uint24_t    hl,
+              uint24_t    ix,
+              uint24_t    iy) {
   printf("log: %s.\r\nAF:%X, BC: %X, DE: %X, HL: %X, AF':%X, BC': %X, DE': %X, "
          "HL': %X, ix: %X, iy: %X\r\n",
          name, af, bc, de, hl, af_, bc_, de_, hl_, ix, iy);
@@ -251,12 +255,10 @@ void log_info(const char *name, uint24_t *sp, uint24_t af_, uint24_t bc_,
   printf("\r\n");
 
   p = (uint8_t *)hl;
-  printf("*hl: %02X %02X %02X %02X %02X %02X\r\n", p[0], p[1], p[2], p[3], p[4],
-         p[5]);
+  printf("*hl: %02X %02X %02X %02X %02X %02X\r\n", p[0], p[1], p[2], p[3], p[4], p[5]);
 
   p = (uint8_t *)de;
-  printf("*de: %02X %02X %02X %02X %02X %02X\r\n", p[0], p[1], p[2], p[3], p[4],
-         p[5]);
+  printf("*de: %02X %02X %02X %02X %02X %02X\r\n", p[0], p[1], p[2], p[3], p[4], p[5]);
 
   printf("ACCS: ");
   for (int i = 0; i < 6; i++)
@@ -264,12 +266,10 @@ void log_info(const char *name, uint24_t *sp, uint24_t af_, uint24_t bc_,
   printf("\r\n");
 }
 
-#define ABORT_X(name)                                                          \
-  void abort_##name(uint24_t af, uint24_t bc, uint24_t de, uint24_t hl,        \
-                    uint24_t ix) {                                             \
-    printf("Abort " #name ".  AF:%X, BC: %X, DE: %X, HL: %X, ix: %X\r\n", af,  \
-           bc, de, hl, ix);                                                    \
-    abort();                                                                   \
+#define ABORT_X(name)                                                                                                              \
+  void abort_##name(uint24_t af, uint24_t bc, uint24_t de, uint24_t hl, uint24_t ix) {                                             \
+    printf("Abort " #name ".  AF:%X, BC: %X, DE: %X, HL: %X, ix: %X\r\n", af, bc, de, hl, ix);                                     \
+    abort();                                                                                                                       \
   }
 
 ABORT_X(exists)

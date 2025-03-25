@@ -54,81 +54,81 @@
 
 void vdu_mode() {
   current_display_mode = data[0];
-  tviewport.left = 0;
-  last_text_row = 26;
-  tviewport.bottom = 26;
-  tviewport.top = 0;
+  tviewport.left       = 0;
+  last_text_row        = 26;
+  tviewport.bottom     = 26;
+  tviewport.top        = 0;
 
   switch (data[0]) {
   case 0:
     vdp_set_palette(default_2_colour_palette);
-    current_tfg_colour = 1;
-    current_tbg_colour = 0;
+    current_tfg_colour       = 1;
+    current_tbg_colour       = 0;
     current_mode_colour_mask = 1;
-    last_text_column = 79;
-    tviewport.right = 79;
-    last_text_row = 49;
-    tviewport.bottom = 49;
+    last_text_column         = 79;
+    tviewport.right          = 79;
+    last_text_row            = 49;
+    tviewport.bottom         = 49;
     vdp_set_super_graphic_5();
     break;
 
   case 1:
     vdp_set_palette(default_4_colour_palette);
-    current_tfg_colour = 3;
-    current_tbg_colour = 0;
+    current_tfg_colour       = 3;
+    current_tbg_colour       = 0;
     current_mode_colour_mask = 3;
-    last_text_column = 39;
-    tviewport.right = 39;
-    last_text_row = 29;
-    tviewport.bottom = 29;
+    last_text_column         = 39;
+    tviewport.right          = 39;
+    last_text_row            = 29;
+    tviewport.bottom         = 29;
     vdp_set_super_graphic_2();
     break;
 
   case 2:
     vdp_set_palette(default_16_colour_palette);
-    current_tfg_colour = 7;
-    current_tbg_colour = 0;
+    current_tfg_colour       = 7;
+    current_tbg_colour       = 0;
     current_mode_colour_mask = 15;
-    last_text_column = 39;
-    tviewport.right = 39;
-    last_text_row = 29;
-    tviewport.bottom = 29;
+    last_text_column         = 39;
+    tviewport.right          = 39;
+    last_text_row            = 29;
+    tviewport.bottom         = 29;
     vdp_set_super_graphic_2();
     break;
 
   case 3:
     vdp_set_palette(default_2_colour_palette);
-    current_tfg_colour = 1;
-    current_tbg_colour = 0;
+    current_tfg_colour       = 1;
+    current_tbg_colour       = 0;
     current_mode_colour_mask = 1;
-    last_text_column = 79;
-    tviewport.right = 79;
-    last_text_row = 49;
-    tviewport.bottom = 49;
+    last_text_column         = 79;
+    tviewport.right          = 79;
+    last_text_row            = 49;
+    tviewport.bottom         = 49;
     vdp_set_super_graphic_5();
     break;
 
   case 4:
     vdp_set_palette(default_2_colour_palette);
-    current_tfg_colour = 1;
-    current_tbg_colour = 0;
+    current_tfg_colour       = 1;
+    current_tbg_colour       = 0;
     current_mode_colour_mask = 1;
-    last_text_column = 39;
-    tviewport.right = 39;
-    last_text_row = 29;
-    tviewport.bottom = 29;
+    last_text_column         = 39;
+    tviewport.right          = 39;
+    last_text_row            = 29;
+    tviewport.bottom         = 29;
     vdp_set_super_graphic_2();
     break;
 
   case 5:
     vdp_set_palette(default_4_colour_palette);
-    current_tfg_colour = 3;
-    current_tbg_colour = 0;
+    current_tfg_colour       = 3;
+    current_tbg_colour       = 0;
     current_mode_colour_mask = 3;
-    last_text_column = 39;
-    tviewport.right = 39;
-    last_text_row = 29;
-    tviewport.bottom = 29;
+    last_text_column         = 39;
+    tviewport.right          = 39;
+    last_text_row            = 29;
+    tviewport.bottom         = 29;
     vdp_set_super_graphic_2();
     break;
 
@@ -139,9 +139,9 @@ void vdu_mode() {
     vdu_not_implemented();
   }
 
-  gsviewport.left = convert_x(gviewport.left);
-  gsviewport.top = convert_y(gviewport.top);
-  gsviewport.right = convert_x(gviewport.right);
+  gsviewport.left   = convert_x(gviewport.left);
+  gsviewport.top    = convert_y(gviewport.top);
+  gsviewport.right  = convert_x(gviewport.right);
   gsviewport.bottom = convert_y(gviewport.bottom);
 
   vdu_cls();

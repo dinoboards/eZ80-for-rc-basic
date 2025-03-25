@@ -17,16 +17,15 @@ void vdu_cls() {
   // apply correct back colour
   vdp_cmd_wait_completion();
 
-  const uint16_t left = (uint16_t)tviewport.left * 8;
+  const uint16_t left   = (uint16_t)tviewport.left * 8;
   const uint16_t bottom = (uint16_t)tviewport.bottom * 8;
-  const uint16_t right = (uint16_t)tviewport.right * 8;
-  const uint16_t top = (uint16_t)tviewport.top * 8;
+  const uint16_t right  = (uint16_t)tviewport.right * 8;
+  const uint16_t top    = (uint16_t)tviewport.top * 8;
 
-  const uint16_t width = right - left + 8;
+  const uint16_t width  = right - left + 8;
   const uint16_t height = bottom - top + 8;
 
-  vdp_cmd_logical_move_vdp_to_vram(left, top, width, height, current_tbg_colour,
-                                   0, 0);
+  vdp_cmd_logical_move_vdp_to_vram(left, top, width, height, current_tbg_colour, 0, 0);
 
   current_tpos.x = tviewport.left;
   current_tpos.y = tviewport.top;

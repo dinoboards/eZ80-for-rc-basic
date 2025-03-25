@@ -5,17 +5,15 @@
 #include <stdio.h>
 
 void prepare_font_pattern(uint8_t ch, uint16_t gpos_x, uint16_t gpos_y) {
-  if (font_color[ch].fg == current_tfg_colour &&
-      font_color[ch].bg == current_tbg_colour)
+  if (font_color[ch].fg == current_tfg_colour && font_color[ch].bg == current_tbg_colour)
     return;
 
-  uint8_t *p = &font_patterns[ch * 8];
+  uint8_t *p        = &font_patterns[ch * 8];
   font_color[ch].fg = current_tfg_colour;
   font_color[ch].bg = current_tbg_colour;
 
   vdp_cmd_wait_completion();
-  vdp_cmd_logical_move_vdp_to_vram(gpos_x, gpos_y, 8, 8, current_tbg_colour, 0,
-                                   0);
+  vdp_cmd_logical_move_vdp_to_vram(gpos_x, gpos_y, 8, 8, current_tbg_colour, 0, 0);
 
   for (int y = 0; y < 8; y++) {
     const uint8_t r = *p++;

@@ -43,37 +43,37 @@ typedef struct text_colours {
   uint8_t bg;
 } text_colours_t;
 
-#define RGB_BLACK                                                              \
+#define RGB_BLACK                                                                                                                  \
   (RGB) { 0, 0, 0 }
-#define RGB_WHITE                                                              \
+#define RGB_WHITE                                                                                                                  \
   (RGB) { 7, 7, 7 }
-#define RGB_RED                                                                \
+#define RGB_RED                                                                                                                    \
   (RGB) { 7, 0, 0 }
-#define RGB_GREEN                                                              \
+#define RGB_GREEN                                                                                                                  \
   (RGB) { 0, 7, 0 }
-#define RGB_BLUE                                                               \
+#define RGB_BLUE                                                                                                                   \
   (RGB) { 0, 0, 7 }
-#define RGB_YELLOW                                                             \
+#define RGB_YELLOW                                                                                                                 \
   (RGB) { 7, 7, 0 }
-#define RGB_MAGENTA                                                            \
+#define RGB_MAGENTA                                                                                                                \
   (RGB) { 7, 0, 7 }
-#define RGB_CYAN                                                               \
+#define RGB_CYAN                                                                                                                   \
   (RGB) { 0, 7, 7 }
-#define RGB_FLASHING_BLACK_WHITE                                               \
+#define RGB_FLASHING_BLACK_WHITE                                                                                                   \
   (RGB) { 3, 3, 3 }
-#define RGB_FLASHING_RED_CYAN                                                  \
+#define RGB_FLASHING_RED_CYAN                                                                                                      \
   (RGB) { 7, 3, 3 }
-#define RGB_FLASHING_GREEN_MAGENTA                                             \
+#define RGB_FLASHING_GREEN_MAGENTA                                                                                                 \
   (RGB) { 3, 7, 3 }
-#define RGB_FLASHING_YELLOW_BLUE                                               \
+#define RGB_FLASHING_YELLOW_BLUE                                                                                                   \
   (RGB) { 3, 3, 7 }
-#define RGB_FLASHING_BLUE_YELLOW                                               \
+#define RGB_FLASHING_BLUE_YELLOW                                                                                                   \
   (RGB) { 7, 7, 3 }
-#define RGB_FLASHING_MAGENTA_GREEN                                             \
+#define RGB_FLASHING_MAGENTA_GREEN                                                                                                 \
   (RGB) { 7, 3, 7 }
-#define RGB_FLASHING_CYAN_RED                                                  \
+#define RGB_FLASHING_CYAN_RED                                                                                                      \
   (RGB) { 3, 7, 7 }
-#define RGB_FLASHING_WHITE_BLACK                                               \
+#define RGB_FLASHING_WHITE_BLACK                                                                                                   \
   (RGB) { 3, 3, 3 }
 
 typedef void (*mos_vdu_handler)();
@@ -95,7 +95,7 @@ extern void vdu_set_origin();
 extern void vdu_tab();
 
 extern void init_font_patterns();
-void prepare_font_pattern(uint8_t ch, uint16_t x, uint16_t y);
+void        prepare_font_pattern(uint8_t ch, uint16_t x, uint16_t y);
 
 extern int16_t convert_x(int16_t logical_x);
 extern int16_t convert_y(int16_t logical_y);
@@ -104,31 +104,31 @@ extern point_t convert_point(const point_t p);
 // vdu variables
 
 extern point_t origin;
-extern RGB default_2_colour_palette[16];
-extern RGB default_4_colour_palette[16];
-extern RGB default_16_colour_palette[16];
+extern RGB     default_2_colour_palette[16];
+extern RGB     default_4_colour_palette[16];
+extern RGB     default_16_colour_palette[16];
 
 extern const int16_t scale_width;
 extern const int16_t scale_height;
 
-extern rectangle_t gviewport;
-extern rectangle_t gsviewport;
-extern point_t current_gpos;
-extern point_t previous_gpos;
-extern uint8_t current_gfg_colour;
-extern uint8_t current_operation_mode;
-extern uint8_t current_display_mode;
-extern uint8_t sysfont[(128 - ' ') * 8]; // 96*8
-extern uint8_t font_patterns[256 * 8];
+extern rectangle_t    gviewport;
+extern rectangle_t    gsviewport;
+extern point_t        current_gpos;
+extern point_t        previous_gpos;
+extern uint8_t        current_gfg_colour;
+extern uint8_t        current_operation_mode;
+extern uint8_t        current_display_mode;
+extern uint8_t        sysfont[(128 - ' ') * 8]; // 96*8
+extern uint8_t        font_patterns[256 * 8];
 extern text_colours_t font_color[256];
 
-extern tpoint_t current_tpos;
+extern tpoint_t     current_tpos;
 extern trectangle_t tviewport;
-extern uint8_t last_text_column;
-extern uint8_t last_text_row;
-extern uint8_t current_tbg_colour;
-extern uint8_t current_tfg_colour;
-extern uint8_t current_mode_colour_mask;
+extern uint8_t      last_text_column;
+extern uint8_t      last_text_row;
+extern uint8_t      current_tbg_colour;
+extern uint8_t      current_tfg_colour;
+extern uint8_t      current_mode_colour_mask;
 
 #define MAX_VDP_BYTES 16
 extern uint8_t data[MAX_VDP_BYTES];
