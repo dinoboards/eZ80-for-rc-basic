@@ -36,11 +36,15 @@
 // SUPER 6        640 x 480 256 colours @ 50Hz
 // SUPER 7        720 x 480 256 colours @ 60Hz
 // SUPER 8        720 x 576 256 colours @ 50Hz
+// SUPER 9        640 x 240 256 colours @ 50Hz
+// SUPER 10       640 x 288 256 colours @ 50Hz
+// SUPER 11       640 x 240 256 colours @ 50Hz
+// SUPER 12       640 x 256 256 colours @ 50Hz
 
 //    xx      | xx - serial I/O  MODE 255 (-1)
 
 // BBC MODE   | SUPER MODE | MAP
-//   0        |    5       | 640x256 => 640x400 (60Hz)
+//   0        |    12      | 640x256 => 640x256 (50Hz)
 //   1        |    2       | 320x256 => 320x240 (50Hz)
 //   2        |    2       | 160x256 => 320x240 (50Hz)
 //   3        |    5       | 80x25 ch => (640x400) 60hz
@@ -67,9 +71,9 @@ void vdu_mode() {
     current_mode_colour_mask = 1;
     last_text_column         = 79;
     tviewport.right          = 79;
-    last_text_row            = 49;
-    tviewport.bottom         = 49;
-    vdp_set_super_graphic_5();
+    last_text_row            = 31;
+    tviewport.bottom         = 31;
+    vdp_set_super_graphic_12();
     break;
 
   case 1:
