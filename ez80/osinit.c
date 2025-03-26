@@ -1,5 +1,5 @@
 #include "ram.h"
-// #include "vdu.h"
+#include "vdu.h"
 #include <cpm.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -36,7 +36,7 @@ static uint8_t *find_mem_top(uint8_t *heap) {
 }
 
 void osinit() {
-  // init_font_patterns();
+  init_font_patterns();
 
   LOMEM = (uint8_t *)(((uint24_t)_heap + 255) & ~255);
   printf("LOMEM: %p\r\n", LOMEM);
