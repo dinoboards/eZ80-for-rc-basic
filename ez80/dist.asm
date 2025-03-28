@@ -21,7 +21,10 @@ CLRSCN:	JP	CLS		;CLEAR SCREEN
 ; PUTIME:	JP	PTIME		;SET ELAPSED TIME
 ; GETIME:	JP	GTIME		;READ ELAPSED TIME
 ; GETKEY:	JP	INKEY		;READ KEY (TIME LIMIT)
-BYE:	JP	REBOOT		;RETURN TO CP/M
+BYE:
+	ld	hl, 0
+	push	hl
+	call	_exit		;RETURN TO CP/M
 ;
 ;BDOS	- Save the IX and IY registers and before performing a
 ;	  CP/M function call.
@@ -32,10 +35,6 @@ BDOS:	PUSH	IX
 	POP	IY
 	POP	IX
 	RET
-;
-;REBOOT	- Switch off interrupts and return to CP/M
-;
-REBOOT:	RST	0
 ;
 ;GTIME	- Read elapsed-time clock.
 ;  	  Outputs: DEHL = elapsed time (centiseconds)
