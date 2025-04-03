@@ -71,9 +71,9 @@ void vdu_mode() {
     current_mode_colour_mask = 1;
     last_text_column         = 79;
     tviewport.right          = 79;
-    last_text_row            = 31;
-    tviewport.bottom         = 31;
-    vdp_set_super_graphic_12();
+    last_text_row            = 63;
+    tviewport.bottom         = 63;
+    vdp_set_super_graphic_9();
     break;
 
   case 1:
