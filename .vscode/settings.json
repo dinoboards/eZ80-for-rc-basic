@@ -9,6 +9,7 @@
     "*.asmpp": "z80-macroasm",
     "*.zdsproj": "xml",
     "*.Z80": "z80-macroasm",
-    "ram.h": "c"
+    "*.h": "c",
+    "*.c": "c"
   }
 }
