@@ -1,0 +1,91 @@
+                              10 REM Derby Day
+                              20 MODE 5
+                              30 DIM X(5)
+                              40 DIM Y(5)
+                              50 VDU 23,224,&00,&0C,&1A,&FF,&7D,&42,&81,&00
+                              60 VDU 23,226,&0F,&0F,&0F,&0F,&F0,&F0,&F0,&F0
+                              70 CLS
+                              80 PRINT TAB(0,3);" D E R B Y D A Y"
+                              90 VDU 23;8202;0;0;0;
+                              100 GOSUB 530
+                              110 MODE 1
+                              120 VDU 19,0,2,0,0,0
+                              130 VDU 19,1,0,0,0,0
+                              140 VDU 19,2,3,0,0,0
+                              150 VDU 19,3,7,0,0,0
+                              160 TTAL=100
+                              170 COLOUR 128
+                              180 COLOUR 1
+                              190 CLS
+                              200 FORX=1 TO 31
+                              210 PRINT TAB(X,1);"#";TAB(X,11);"#"
+                              220 NEXT
+                              230 FORY=2 TO 10
+                              240 PRINT TAB(31,Y);CHR$(226)
+                              250 NEXT
+                              260 COLOUR 2
+                              270 FORY=1 TO 5
+                              280 X(Y)=2
+                              290 Y(Y)=Y*2
+                              300 PRINT TAB(X(Y)-1,Y(Y));Y;CHR$(224)
+                              310 NEXT
+                              320 PRINT TAB(0,14);
+                              330 INPUT"WHICH HORSE DO YOU WANT TO BETON ",B
+                              340 IF B<1 OR B>5 THEN PRINT TAB(0,20);"NO SUCH HORSE":GOTO 320
+                              350 PRINT TAB(0,16);
+                              360 INPUT"HOW MUCH DO YOU WANT TO BET",M
+                              370 IF TTAL-M<0 THEN PRINT TAB(0,20);"YOU DON'T HAVE ENOUGH MONEY!":SOUND 0,-5,50,20:GOTO 350
+                              380 TTAL=TTAL-M
+                              390 PRINT TAB(0,20);STRING$(80," ")
+                              400 VDU 23;8202;0;0;0;
+                              410 COLOUR 3
+                              420 PRINT TAB(X(B),Y(B));CHR$(224)
+                              430 COLOUR 2
+                              440 TEMPO=5
+                              450 Z=RND(5)
+                              460 PRINT TAB(X(Z),Y(Z));" "
+                              470 X(Z)=X(Z)+RND(2)
+                              480 IFZ=B THEN COLOUR 3 ELSE COLOUR 2
+                              490 PRINT TAB(X(Z),Y(Z));CHR$(224)
+                              500 IF X(Z)>30 THEN GOTO 820
+                              510 IF FNTUNE(P,T,TEMPO)=999 THEN RESTORE
+                              520 GOTO 440
+                              530 TEMPO=6
+                              540 I=1
+                              550 IF FNTUNE(P,T,TEMPO)=999 THEN GOTO 610
+                              560 PRINT TAB(I,20);" ";CHR$(224)
+                              570 FOR Z=1 TO 10
+                              580 NEXT
+                              590 I=I+.2
+                              600 GOTO 550
+                              610 PRINT TAB(I+1,15);" "
+                              620 RESTORE
+                              630 RETURN
+                              640 DEF FNTUNE(P,T,TEMPO)
+                              650 DATA 89,20,89,20,89,20,77,20,89,20,97,20,89,20,77,20,-999,20,77,20,69,60,77,20,69,40
+                              660 DATA 89,20,89,20,77,20,89,20,97,20,89,20,77,20
+                              670 DATA -999,20,77,10,69,10,61,10,69,10,77,20,69,20,61,60
+                              680 DATA -999,20,-999,20,61,30,61,10,77,20,89,20,109,60
+                              690 DATA -999,20,97,30,97,10,109,20,97,20,89,60
+                              700 DATA 77,10,81,10,89,20,89,20,77,10,77,10
+                              710 DATA 89,10,89,10,97,20,89,20,77,40
+                              720 DATA 69,20,77,20,81,10,77,20,69,10,69,10,61,60
+                              730 DATA 999,999
+                              740 READ P,T
+                              750 IFP=999 THEN GOTO 810
+                              760 T=T/TEMPO
+                              770 IF P=-999 THEN P=0:AM=0 ELSE AM=-10
+                              780 SOUND 1,AM,P,T
+                              790 REM IF ADVAL(-6)<>15 THEN GOTO 790
+                              800 SOUND 1,0,0,1
+                              810 =T
+                              820 IF Z=B THEN PRINT TAB(0,18);" YOU WIN ";INT(5*M):TTAL=TTAL+INT(5*M)
+                              830 IF Z<>B THEN PRINT TAB(0,18);" YOU LOSE ";M
+                              840 IF TTAL<=0 THEN PRINT TAB(0,18);"YOU'RE BROKE ":FOR Z=1 TO 5000:NEXT:CLS:GOTO 910
+                              850 PRINT "YOU HAVE ";TTAL
+                              860 INPUT "ANOTHER RACE Y/N",A$
+                              870 A$=LEFT$(A$,1)
+                              880 RESTORE
+                              890 CLS
+                              900 IF A$="Y"THEN GOTO 170
+                              910 VDU 20

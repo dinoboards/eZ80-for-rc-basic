@@ -5,7 +5,7 @@ MAKEFLAGS += --no-builtin-rules
 
 all: BBCeZ80.EXE
 
-FILES := main.asm exec.asm eval.asm math.asm asmb.asm data.asm dist.asm hook.asm cmos.asm debug.c osinit.c vdu.c timer.c nanoprintf.c graphics.asm
+FILES := main.asm exec.asm eval.asm math.asm asmb.asm data.asm dist.asm hook.asm cmos.asm debug.c osinit.c vdu.c timer.c nanoprintf.c graphics.asm sound.asm os.asm
 VDU_FILES := $(wildcard vdu/*.c)
 FILES += $(VDU_FILES) vdu/sysfont.asm
 

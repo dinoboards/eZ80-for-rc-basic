@@ -1259,11 +1259,7 @@ ESCSET:	PUSH	HL
 	SET	7,(HL)		;SET ESCAPE FLAG
 ESCDIS:	POP	HL
 	RET
-;
-;OSWRCH - Write a character to console output.
-;   Inputs: A = character.
-; Destroys: Nothing
-;
+
 GETKEY:	PUSH	BC
 	PUSH	HL
 	PUSH	IY
@@ -1290,6 +1286,11 @@ WAIT1:	CP	(HL)
 	DEC	HL
 	JR	GETKEY
 
+;
+;OSWRCH - Write a character to console output.
+;   Inputs: A = character.
+; Destroys: Nothing
+;
 OSWRCH:	PUSH	AF
 	push	bc
 	PUSH	DE

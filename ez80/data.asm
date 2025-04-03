@@ -36,3 +36,7 @@ conversion_store:	ds 		4		; Scratch pad to convert integer representations
 
 _IY:	d24 	0
 
+	global	SCRAP
+
+SCRAP:	DEFS	31
+	DEFB	0
