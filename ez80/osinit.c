@@ -39,10 +39,10 @@ void osinit() {
   init_font_patterns();
 
   LOMEM = (uint8_t *)(((uint24_t)_heap + 255) & ~255);
-  printf("LOMEM: %p\r\n", LOMEM);
+  printf("LOMEM: %p\n", LOMEM);
 
   HIMEM = find_mem_top(LOMEM);
 
-  printf("HIMEM: %p\r\n", HIMEM);
-  printf("%d bytes available\r\n", HIMEM - LOMEM);
+  printf("HIMEM: %p\n", HIMEM);
+  printf("%d bytes available\n", HIMEM - LOMEM);
 }

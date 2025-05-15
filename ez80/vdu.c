@@ -18,7 +18,7 @@ static void graphic_print_char(uint8_t ch) {
   // calculate real physical location to begin printing;
 
   if ((ch < ' ')) { // TODO: WE NEED TO RENDER OUT BITMAPS FOR ALL CHARS AFTER ' '
-    // printf("TODO: process char 0x'%X'\r\n", ch);
+    // printf("TODO: process char 0x'%X'\n", ch);
     return;
   }
 

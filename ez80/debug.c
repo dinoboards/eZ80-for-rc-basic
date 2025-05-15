@@ -6,25 +6,25 @@
 #include <stdlib.h>
 
 void debug() {
-  printf("HIMEM: %p\r\n", HIMEM);
-  printf("LOMEM: %p\r\n", LOMEM);
-  printf("PAGE: %p\r\n", PAGE);
-  printf("FCB_BLOCKS: %p\r\n", FCB_BLOCKS);
-  printf("LOCCHK: %p\r\n", LOCCHK);
+  printf("HIMEM: %p\n", HIMEM);
+  printf("LOMEM: %p\n", LOMEM);
+  printf("PAGE: %p\n", PAGE);
+  printf("FCB_BLOCKS: %p\n", FCB_BLOCKS);
+  printf("LOCCHK: %p\n", LOCCHK);
 
-  // printf("FCB: %p\r\n", CPM_SYS_FCB);
-  // printf("DISK_BUFFER: %p\r\n", DISK_BUFFER);
-  // printf("OPTVAL: %p, %x\r\n", &OPTVAL, OPTVAL);
-  // printf("TRPCNT: %p, %x\r\n", &TRPCNT, TRPCNT);
-  // printf("RAM_END: %p\r\n", RAM_END);
-  // printf("end_of_bss: %p\r\n", end_of_bss);
-  // printf("_heap: %p\r\n", _heap);
-  // printf("STAVAR: %p, %lX, %lX, %lX\r\n", STAVAR, STAVAR[0], STAVAR[1],
-  // STAVAR[2]); printf("FREE_FCB_TABLE: %X\r\n", FREE_FCB_TABLE);
+  // printf("FCB: %p\n", CPM_SYS_FCB);
+  // printf("DISK_BUFFER: %p\n", DISK_BUFFER);
+  // printf("OPTVAL: %p, %x\n", &OPTVAL, OPTVAL);
+  // printf("TRPCNT: %p, %x\n", &TRPCNT, TRPCNT);
+  // printf("RAM_END: %p\n", RAM_END);
+  // printf("end_of_bss: %p\n", end_of_bss);
+  // printf("_heap: %p\n", _heap);
+  // printf("STAVAR: %p, %lX, %lX, %lX\n", STAVAR, STAVAR[0], STAVAR[1],
+  // STAVAR[2]); printf("FREE_FCB_TABLE: %X\n", FREE_FCB_TABLE);
 
-  // printf("TABLE: %p\r\n", TABLE);
+  // printf("TABLE: %p\n", TABLE);
   // for (int i = 0; i < 8; i++) {
-  //   printf("  TABLE[%d]: %p\r\n", i, TABLE[i]);
+  //   printf("  TABLE[%d]: %p\n", i, TABLE[i]);
   // }
 }
 
@@ -77,7 +77,7 @@ void log_fn_proc(const char *prefix, uint8_t *proc) {
   log_str_z(&proc);
 
   uint24_t proc_ptr = *((uint24_t *)proc);
-  printf(" @ %06X %02X %02X LB: %06X\r\n", proc_ptr, proc[3], proc[4], (uint24_t)proc + 4);
+  printf(" @ %06X %02X %02X LB: %06X\n", proc_ptr, proc[3], proc[4], (uint24_t)proc + 4);
 
   log_fn_proc(prefix, (uint8_t *)next_proc);
 }
@@ -105,18 +105,18 @@ void log_variable(uint8_t i, uint8_t *d) {
     printf(" len: %d max: %d @ %06X LB: %06X ", len, max_len, (uint24_t)str, (uint24_t)(d - 1));
 
     if (str) {
-      printf("\r\n%06X: ", (uint24_t)str);
+      printf("\n%06X: ", (uint24_t)str);
       for (int l = 0; l < len; l++)
         putchar(str[l]);
 
-      printf("  LB: %06X\r\n", (uint24_t)(str + len - 1));
+      printf("  LB: %06X\n", (uint24_t)(str + len - 1));
     }
   }
 
   else if (last_char == '(') {
     uint8_t *array_description = *((uint8_t **)d);
     d += 3;
-    printf(" @ %06X LB: %06X\r\n", (uint24_t)array_description, (uint24_t)(d - 1));
+    printf(" @ %06X LB: %06X\n", (uint24_t)array_description, (uint24_t)(d - 1));
 
     if (array_description && (uint24_t)array_description != 1) {
       uint24_t total_elements = 0;
@@ -132,18 +132,18 @@ void log_variable(uint8_t i, uint8_t *d) {
         printf("%d,", count);
       }
 
-      printf(")  LB: %06X\r\n", (uint24_t)(array_description - 1));
+      printf(")  LB: %06X\n", (uint24_t)(array_description - 1));
 
-      printf("%06X: ARRAY DATA: .... LB: (1B: %06X, 4B: %06X, 5B: %06X)\r\n", (uint24_t)(array_description),
+      printf("%06X: ARRAY DATA: .... LB: (1B: %06X, 4B: %06X, 5B: %06X)\n", (uint24_t)(array_description),
              (uint24_t)(array_description + total_elements - 1), (uint24_t)(array_description + total_elements * 4 - 1),
              (uint24_t)(array_description + total_elements * 5 - 1));
     }
 
   } else {
     if (d[4] == 0)
-      printf(" i: %ld LB: %06X\r\n", *((int32_t *)d), (uint24_t)(d + 4));
+      printf(" i: %ld LB: %06X\n", *((int32_t *)d), (uint24_t)(d + 4));
     else
-      printf(" f: %f LB: %06X\r\n", convert_to_float(d), (uint24_t)(d + 4));
+      printf(" f: %f LB: %06X\n", convert_to_float(d), (uint24_t)(d + 4));
   }
 
   log_variable(i, (uint8_t *)next_var);
@@ -152,10 +152,10 @@ void log_variable(uint8_t i, uint8_t *d) {
 #if 0
 void print_number(uint16_t high, uint16_t low, uint8_t exp) {
   if (exp == 0) {
-    printf("%ld\r\n", (((int32_t)high << 16) + low));
+    printf("%ld\n", (((int32_t)high << 16) + low));
   } else {
     uint8_t hl_number[5] = {high >> 8, high & 0xFF, low >> 8, low & 0xff, exp};
-    printf("%f\r\n", convert_to_float(hl_number));
+    printf("%f\n", convert_to_float(hl_number));
   }
 }
 #endif
@@ -168,7 +168,7 @@ uint8_t valid_var_char(uint8_t c) {
 }
 
 void inspect_all() {
-  printf("\r\nPROGAM @ %p:\r\n", PAGE);
+  printf("\r\nPROGAM @ %p:\n", PAGE);
   uint8_t *p = PAGE;
   while (1) {
     uint8_t length = p[0];
@@ -181,31 +181,31 @@ void inspect_all() {
     uint16_t line_number = ln_msb * 256 + ln_lsb;
     uint8_t  token       = p[3];
 
-    printf("%p: %d -- len: %d tok: %x\r\n", p, line_number, length, token);
+    printf("%p: %d -- len: %d tok: %x\n", p, line_number, length, token);
     p += length;
   }
-  printf("%p: end\r\n", p);
+  printf("%p: end\n", p);
 
-  printf("\r\nDynamic Variables:\r\n");
+  printf("\r\nDynamic Variables:\n");
   for (uint8_t i = 0; i < 54; i++) {
     uint8_t *d = DYNVAR[i];
     log_variable(valid_var_char(i), d);
   }
 
-  printf("\r\n");
+  printf("\n");
   log_fn(FNPTR);
 
-  printf("\r\n");
+  printf("\n");
   log_proc(PROPTR);
 
-  printf("\r\nDATPTR @ %p\r\n", DATPTR);
+  printf("\r\nDATPTR @ %p\n", DATPTR);
   if (DATPTR) {
     for (int i = 0; i < 16; i++)
       printf("%x ", DATPTR[i]);
-    printf("\r\n");
+    printf("\n");
   }
 
-  printf("\r\nFREE: %06X\r\n", FREE);
+  printf("\r\nFREE: %06X\n", FREE);
 }
 
 void log_info(const char *name,
@@ -221,14 +221,14 @@ void log_info(const char *name,
               uint24_t    ix,
               uint24_t    iy) {
   printf("log: %s.\r\nAF:%X, BC: %X, DE: %X, HL: %X, AF':%X, BC': %X, DE': %X, "
-         "HL': %X, ix: %X, iy: %X\r\n",
+         "HL': %X, ix: %X, iy: %X\n",
          name, af, bc, de, hl, af_, bc_, de_, hl_, ix, iy);
 
   printf("*sp: (%p) ", sp);
   for (int i = 0; i < 7; i++)
     printf("%02X ", sp[i]);
 
-  printf("\r\n");
+  printf("\n");
 
   uint8_t *p = (uint8_t *)ix;
   printf("*ix: ");
@@ -240,7 +240,7 @@ void log_info(const char *name,
   for (int i = 0; i < 12; i++)
     printf("%02X ", p[i]);
 
-  printf("\r\n");
+  printf("\n");
 
   p = (uint8_t *)iy;
   printf("*iy: ");
@@ -252,23 +252,23 @@ void log_info(const char *name,
   for (int i = 0; i < 12; i++)
     printf("%02X ", p[i]);
 
-  printf("\r\n");
+  printf("\n");
 
   p = (uint8_t *)hl;
-  printf("*hl: %02X %02X %02X %02X %02X %02X\r\n", p[0], p[1], p[2], p[3], p[4], p[5]);
+  printf("*hl: %02X %02X %02X %02X %02X %02X\n", p[0], p[1], p[2], p[3], p[4], p[5]);
 
   p = (uint8_t *)de;
-  printf("*de: %02X %02X %02X %02X %02X %02X\r\n", p[0], p[1], p[2], p[3], p[4], p[5]);
+  printf("*de: %02X %02X %02X %02X %02X %02X\n", p[0], p[1], p[2], p[3], p[4], p[5]);
 
   printf("ACCS: ");
   for (int i = 0; i < 6; i++)
     printf("%02X ", ACCS[i]);
-  printf("\r\n");
+  printf("\n");
 }
 
 #define ABORT_X(name)                                                                                                              \
   void abort_##name(uint24_t af, uint24_t bc, uint24_t de, uint24_t hl, uint24_t ix) {                                             \
-    printf("Abort " #name ".  AF:%X, BC: %X, DE: %X, HL: %X, ix: %X\r\n", af, bc, de, hl, ix);                                     \
+    printf("Abort " #name ".  AF:%X, BC: %X, DE: %X, HL: %X, ix: %X\n", af, bc, de, hl, ix);                                     \
     abort();                                                                                                                       \
   }
 

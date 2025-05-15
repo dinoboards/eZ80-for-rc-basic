@@ -50,23 +50,23 @@ static void vdu_cursor_or_interlace() {
     uint8_t start_line = m & 0xF;
     uint8_t appearance = (m >> 5) & 3;
 
-    printf("Start line: %d\r\n", start_line);
+    printf("Start line: %d\n", start_line);
 
     switch(appearance) {
       case 0:
-        printf("Steady Cursor todo!\r\n");
+        printf("Steady Cursor todo!\n");
         return;
 
       case 1:
-        printf("Cursor off\r\n");
+        printf("Cursor off\n");
         return;
 
       case 2:
-        printf("Fast flashing cursor\r\n");
+        printf("Fast flashing cursor\n");
         return;
 
       case 3:
-        printf("Slow flashing cursor\r\n");
+        printf("Slow flashing cursor\n");
         return;
     }
 
