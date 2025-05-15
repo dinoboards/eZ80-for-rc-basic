@@ -43,15 +43,16 @@
 
 //    xx      | xx - serial I/O  MODE 255 (-1)
 
-// BBC MODE   | SUPER MODE | MAP
-//   0        |    12      | 640x256 => 640x256 (50Hz)
-//   1        |    2       | 320x256 => 320x240 (50Hz)
-//   2        |    2       | 160x256 => 320x240 (50Hz)
-//   3        |    5       | 80x25 ch => (640x400) 60hz
-//   4        |    2       | 320x256 => 320x240 (50Hz)
-//   5        |    2       | 160x256 => 320x240 (50Hz)
-//   6        |    1       | 40x25 ch => 320x200 (50Hz)
-//   7        |    1       | 40x25 ch => 320x200 (50Hz)
+// BBC MODE   |    MODE    | MAP
+//   0        |   SUPER 10 | 640x256(2) => 640x400(256) (60Hz)
+//   1        |   SUPER 2  | 320x256(4) => 320x240 (50Hz)
+//   2        |   SUPER 2  | 160x256(16) => 320x240 (50Hz)
+//   3        |   SUPER 5  | 80x25(2) ch => (640x400) 60hz
+//   4        |   SUPER 2  | 320x256(2) => 320x240 (50Hz)
+//   5        |   SUPER 2  | 160x256(4) => 320x240 (50Hz)
+//   6        |   SUPER 1  | 40x25(2) ch => 320x200 (50Hz)
+//   7        |   SUPER 1  | 40x25(8) ch => 320x200 (50Hz)
+//   16       |     4      | 256x192(16) (50Hz)
 
 // VDU 22 This VDU code is used to change MODE. It is followed by one number
 // which is the new mode. Thus VDU 22,7 is exactly equivalent to MODE 7.
@@ -71,9 +72,9 @@ void vdu_mode() {
     current_mode_colour_mask = 1;
     last_text_column         = 79;
     tviewport.right          = 79;
-    last_text_row            = 63;
-    tviewport.bottom         = 63;
-    vdp_set_super_graphic_9();
+    last_text_row            = 31;
+    tviewport.bottom         = 31;
+    vdp_set_super_graphic_10();
     break;
 
   case 1:
@@ -134,6 +135,20 @@ void vdu_mode() {
     last_text_row            = 29;
     tviewport.bottom         = 29;
     vdp_set_super_graphic_2();
+    break;
+
+  case 16:
+    vdp_set_palette(default_4_colour_palette);
+    current_tfg_colour       = 3;
+    current_tbg_colour       = 0;
+    current_mode_colour_mask = 3;
+    last_text_column         = 31;
+    tviewport.right          = 31;
+    last_text_row            = 23;
+    tviewport.bottom         = 23;
+    vdp_set_lines(192);
+    vdp_set_refresh(50);
+    vdp_set_graphic_4();
     break;
 
   case 255:

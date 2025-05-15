@@ -11,7 +11,7 @@
 
 // Y co-ord to store font data
 // need enough room to allow 2 pages for all modes
-#define FONT_Y_OFFSET (576 * 2)
+#define FONT_Y_OFFSET (current_display_mode >= 16 ? 256 : (576 * 2))
 
 static void graphic_print_char(uint8_t ch) {
 
