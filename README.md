@@ -8,6 +8,24 @@ Should be generally compatible with BBC Basic V5 for the Z80 as per upstream rep
 
 Currently not yet operational - very much a work in progress...
 
+### Running
+
+Requires:
+1. The `eZ80 for RC` module [https://www.dinoboards.com.au/ez80-for-rc](https://www.dinoboards.com.au/ez80-for-rc)
+2. The linear memory module for the `eZ80 for RC` module.
+3. The `EXE.COM` loader - [https://github.com/dinoboards/ez80-for-rc/releases](https://github.com/dinoboards/ez80-for-rc/releases)
+
+### Building
+
+Requires:
+1. linux (or WSL for windows) to build
+2. ez80-for-clang installed [https://github.com/dinoboards/ez80-clang](https://github.com/dinoboards/ez80-clang)
+
+```
+cd ez80
+make
+```
+
 ## Recommended Git Configuration
 
 To ensure consistent handling of TAB characters as 8 spaces and improved diff output for assembly files, add the following to your local Git configuration:
