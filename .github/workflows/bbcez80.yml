@@ -1,6 +1,7 @@
 name: BBCBASIC eZ80 Project
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main/ez80-adl
