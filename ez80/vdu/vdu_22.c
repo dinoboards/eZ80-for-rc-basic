@@ -44,14 +44,14 @@
 //    xx      | xx - serial I/O  MODE 255 (-1)
 
 // BBC MODE   |    MODE    | MAP
-//   0        |   SUPER 10 | 640x256(2) => 640x400(256) (60Hz)
-//   1        |   SUPER 2  | 320x256(4) => 320x240 (50Hz)
+//   0        |   SUPER 26 | 640x256(2)  => 640x256 (60Hz)
+//   1        |   SUPER 2  | 320x256(4)  => 320x240 (50Hz)
 //   2        |   SUPER 2  | 160x256(16) => 320x240 (50Hz)
-//   3        |   SUPER 5  | 80x25(2) ch => (640x400) 60hz
-//   4        |   SUPER 2  | 320x256(2) => 320x240 (50Hz)
-//   5        |   SUPER 2  | 160x256(4) => 320x240 (50Hz)
+//   3        |   SUPER 21 | 80x25(2) ch => (640x400) 60hz
+//   4        |   SUPER 2  | 320x256(2)  => 320x240 (50Hz)
+//   5        |   SUPER 2  | 160x256(4)  => 320x240 (50Hz)
 //   6        |   SUPER 1  | 40x25(2) ch => 320x200 (50Hz)
-//   7        |   SUPER 1  | 40x25(8) ch => 320x200 (50Hz)
+//   7        |   SUPER 1  | 40x25(8) ch mode 0=> 320x200 (50Hz)
 //   16       |     4      | 256x192(16) (50Hz)
 
 // VDU 22 This VDU code is used to change MODE. It is followed by one number
@@ -74,7 +74,7 @@ void vdu_mode() {
     tviewport.right          = 79;
     last_text_row            = 31;
     tviewport.bottom         = 31;
-    vdp_set_super_graphic_10();
+    vdp_set_super_graphic_26();
     break;
 
   case 1:
@@ -110,7 +110,7 @@ void vdu_mode() {
     tviewport.right          = 79;
     last_text_row            = 49;
     tviewport.bottom         = 49;
-    vdp_set_super_graphic_5();
+    vdp_set_super_graphic_21();
     break;
 
   case 4:
@@ -164,4 +164,5 @@ void vdu_mode() {
   gsviewport.bottom = convert_y(gviewport.bottom);
 
   vdu_cls();
+  init_font_patterns();
 }
