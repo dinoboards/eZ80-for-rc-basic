@@ -31,7 +31,7 @@
 ;
 	EXTRN	EXTERR
 ;
-CLG:
+; CLG:
 ; COLOUR:
 ; DRAW:
 ENVEL:
