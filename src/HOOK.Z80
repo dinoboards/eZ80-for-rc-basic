@@ -35,7 +35,7 @@
 ; COLOUR:
 ; DRAW:
 ENVEL:
-GCOL:
+; GCOL:
 ; MODE:
 ; MOVE:
 ; PLOT:
