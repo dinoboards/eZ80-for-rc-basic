@@ -1,0 +1,64 @@
+# BASIC Interpreter for the ez80-for-rc kit
+
+A port of BBC Basic for Z80 by R.T.Russell.  Modified to run in ADL mode on the ez80-for-rc RC2014/RCBus kit.
+
+Should be generally compatible with BBC Basic V5 for the Z80 as per upstream repo https://github.com/rtrussell/BBCZ80
+
+### Status
+
+Currently not yet operational - very much a work in progress...
+
+### Running
+
+Requires:
+1. The `eZ80 for RC` module [https://www.dinoboards.com.au/ez80-for-rc](https://www.dinoboards.com.au/ez80-for-rc)
+2. The linear memory module for the `eZ80 for RC` module.
+3. The `EXE.COM` loader - [https://github.com/dinoboards/ez80-for-rc/releases](https://github.com/dinoboards/ez80-for-rc/releases)
+
+### Building
+
+Requires:
+1. linux (or WSL for windows) to build
+2. ez80-for-clang installed [https://github.com/dinoboards/ez80-clang](https://github.com/dinoboards/ez80-clang)
+
+```
+cd ez80
+make
+```
+
+## Recommended Git Configuration
+
+To ensure consistent handling of TAB characters as 8 spaces and improved diff output for assembly files, add the following to your local Git configuration:
+
+```sh
+git config core.pager 'less -x9'
+git config diff.assembly.xfuncname "^\\s*\\w+:"
+```
+
+### history/changes
+
+* The project is forked from https://github.com/rtrussell/BBCZ80.
+* With changes by Dean Netherton to port to ADL mode running on the eZ80 CPU module for RC2014/RCBus kits.
+* It has utilised some of changes done by Dean Belfield (https://github.com/breakintoprogram/agon-bbc-basic-adl) in his original ADL port for the Agon platform.
+
+All original copyrights/licenses etc as per individual contributors.
+
+## BBCZ80
+
+> Readme from upstream: https://github.com/rtrussell/BBCZ80
+
+BBC BASIC (Z80) v5 is an implementation of the BBC BASIC programming language for the Z80 CPU.
+It is largely compatible with Acorn's ARM BASIC V but with a few language extensions based on
+features of 'BBC BASIC for Windows' and 'BBC BASIC for SDL 2.0'.  These extensions include the
+EXIT statement, the address-of operator (^) and byte (unsigned 8-bit) variables and arrays
+(& suffix character).
+
+More details of the features added in version 5.00 can be found in the file WHATSNEW.TXT.
+
+The files in green constitute the generic BBC BASIC interpreter which is shared by all the
+editions, it (just!) fits in 16 Kbytes so could be held in a ROM of this size.  The files in
+the blue box are used to build the generic CP/M edition.  The files in the red box are used
+to build the Acorn Z80 Second Processor edition.
+
+Note that the name 'BBC BASIC' is used by permission of the British Broadcasting Corporation
+and is not transferrable to a derived or forked work.
